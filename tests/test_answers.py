@@ -10,6 +10,7 @@ def test_answer():
     answers = cc.answer(token, "Is this API easy to use?")
     assert answers[0]["text"] == "Hopefully it's pretty easy"
 
+
 def test_multiple_answers():
     cc = CapeClient()
     cc.login("blo", "bla")

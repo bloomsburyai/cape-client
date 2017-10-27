@@ -74,6 +74,15 @@ class CapeClient:
         r = self._raw_api_call('get-user-token')
         return r.json()['result']['userToken']
 
+    def get_profile(self):
+        """
+        Retrieve the current user's profile
+
+        :return: A dictionary containing the user's profile
+        """
+        r = self._raw_api_call('get-profile')
+        return r.json()['result']
+
     def answer(self, question, token, threshold='high', document_ids=[], documents_only=False, speed_or_accuracy='balanced', number_of_items=1, offset=0):
         """
         Provide a list of answers to a given question.
@@ -100,6 +109,113 @@ class CapeClient:
             params.pop('documentIds')
         r = self._raw_api_call('answer', params)
         return r.json()['result']['items']
+
+    def get_inbox(self, read='both', answered='both', search_term='', number_of_items=30, offset=0):
+        """
+        Retrieve the items in the current user's inbox.
+
+        :param read: Filter messages based on whether they have been read
+        :param answered: Filter messages based on whether they have been answered
+        :param search_term: Filter messages based on whether they contain the search term
+        :param number_of_items:	The number of inbox items to return
+        :param offset: The starting point in the list of inbox items, used in conjunction with number_of_tems to retrieve multiple batches of inbox items.
+        :return: A list of inbox items in reverse chronological order (newest first)
+        """
+        r = self._raw_api_call('get-inbox', {'read': str(read),
+                                             'answered': str(answered),
+                                             'searchTerm': search_term,
+                                             'numberOfItems': str(number_of_items),
+                                             'offset': str(offset)})
+        return r.json()['result']
+
+    def mark_inbox_read(self, inbox_id):
+        """
+        Mark an inbox item as having been read.
+
+        :param inbox_id: The inbox item to mark as being read
+        :return: The ID of the inbox item that was marked as read
+        """
+        r = self._raw_api_call('mark-inbox-read', {'inboxId': str(inbox_id)})
+        return r.json()['result']['inboxId']
+
+    def link_inbox_to_reply(self, inbox_id, reply_id):
+        """
+        When an inbox item is linked to a saved reply it is automatically marked as being answered.
+
+        :param inbox_id: The inbox item to link
+        :param reply_id: The saved reply to link it to
+        :return: The ID of the inbox item and the reply it was linked to
+        """
+        r = self._raw_api_call('link-inbox-to-reply', {'inboxId': str(inbox_id),
+                                                       'replyId': str(reply_id)})
+        return r.json()['result']
+
+    def unlink_inbox_from_reply(self, inbox_id):
+        """
+        When an inbox item is unlinked from a saved reply it is automatically returned to being unanswered.
+
+        :param inbox_id: The inbox item to unlink
+        :return: The ID of the inbox item that was unlinked
+        """
+        r = self._raw_api_call('unlink-inbox-from-reply', {'inboxId': str(inbox_id)})
+        return r.json()['result']['inboxId']
+
+    def get_saved_replies(self, search_term='', number_of_items=30, offset=0):
+        """
+        Retrieve a list of saved replies.
+
+        :param search_term: Filter saved replies based on whether they contain the search term
+        :param number_of_items: The number of saved replies to return
+        :param offset: The starting point in the list of saved replies, used in conjunction with number_of_tems to retrieve multiple batches of saved replies.
+        :return: A list of saved replies in reverse chronological order (newest first)
+        """
+        r = self._raw_api_call('get-saved-replies', {'searchTerm': search_term,
+                                                     'numberOfItems': str(number_of_items),
+                                                     'offset': str(offset)})
+        return r.json()['result']
+
+    def create_saved_reply(self, question, answer):
+        """
+        Create a new saved reply.
+
+        Saved replies are made up of a pair consisting of a canonical question and the response it should produce.
+        In addition to the canonical question a saved reply may have many paraphrased questions associated with it
+        which should produce the same answer (e.g. "How old are you?" vs "What is your age?").
+
+        :param question: The question this saved reply relates to
+        :param answer: The answer to reply with when the question is asked
+        :return: The ID of the new saved reply
+        """
+        r = self._raw_api_call('create-saved-reply', {'question': question,
+                                                      'answer': answer})
+        return r.json()['result']['replyId']
+
+    def delete_saved_reply(self, reply_id):
+        """
+        Delete a saved reply.
+
+        :param reply_id: The ID of the saved reply to delete
+        :return: The ID of the saved reply that was deleted
+        """
+        r = self._raw_api_call('delete-saved-reply', {'replyId': str(reply_id)})
+        return r.json()['result']['replyId']
+
+    def get_documents(self, document_ids=[], number_of_items=30, offset=0):
+        """
+        Retrieve this user's documents.
+
+        :param document_ids: A list of documents to return
+        :param number_of_items: The number of documents to return
+        :param offset: The starting point in the list of documents, used in conjunction with number_of_items to retrieve multiple batches of documents
+        :return: A list of documents in reverse chronological order (newest first)
+        """
+        params = {'documentIds': document_ids,
+                  'numberOfItems': str(number_of_items),
+                  'offset': str(offset)}
+        if len(document_ids) == 0:
+            params.pop('documentIds')
+        r = self._raw_api_call('get-documents', params)
+        return r.json()['result']
 
     def upload_document(self, title, text=None, file_path=None, document_id='', origin='', replace=False,
                         monitor_callback=None):
@@ -133,3 +249,50 @@ class CapeClient:
         else:
             raise CapeException("Either the 'text' or the 'file_path' parameter are required for document uploads.")
         return r.json()['result']['documentId']
+
+    def delete_document(self, document_id):
+        """
+
+        :param document_id: The ID of the document to delete
+        :return: The ID of the document that was deleted
+        """
+        r = self._raw_api_call('delete-document', {'documentId': document_id})
+        return r.json()['result']['documentId']
+
+    def get_default_message(self):
+        """
+        Retrieve the message used when the system isn't able to find an answer above the requested threshold.
+
+        :return: The message currently used when an answer couldn't be found.
+        """
+        r = self._raw_api_call('get-default-message')
+        return r.json()['result']['message']
+
+    def set_default_message(self, message):
+        """
+        Set the message used when the system isn't able to find an answer above the requested threshold.
+
+        :param message: The new default message to set.
+        :return: The new default message that's just been set
+        """
+        r = self._raw_api_call('set-default-message', {'message': message})
+        return r.json()['result']['message']
+
+    def get_default_threshold(self):
+        """
+        Retrieve the default threshold used if one isn't explicitly specified when calling answer()
+
+        :return: The current default threshold (either 'low', 'medium' or 'high')
+        """
+        r = self._raw_api_call('get-default-threshold')
+        return r.json()['result']['threshold']
+
+    def set_default_threshold(self, threshold):
+        """
+        Set the default threshold used if one isn't explicitly specified when calling answer()
+
+        :param threshold: The new default threshold to set, must be either 'low', 'medium' or 'high'
+        :return: The new default threshold that's just been set
+        """
+        r = self._raw_api_call('set-default-threshold', {'threshold': threshold})
+        return r.json()['result']['threshold']
