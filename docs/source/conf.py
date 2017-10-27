@@ -47,8 +47,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Cape API Client Library'
-copyright = '2017, Bloomsbury.AI'
-author = 'Bloomsbury.AI'
+copyright = '2017, Bloomsbury AI'
+author = 'Bloomsbury AI'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -140,7 +140,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'CapeAPIClientLibrary.tex', 'Cape API Client Library Documentation',
-     'Bloomsbury.AI', 'manual'),
+     'Bloomsbury AI', 'manual'),
 ]
 
 
