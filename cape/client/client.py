@@ -1,5 +1,6 @@
 import os.path
 from requests import Session
+from requests_toolbelt.multipart import encoder
 from .exceptions import CapeException
 
 
@@ -17,18 +18,20 @@ class CapeClient:
         self.session = Session()
         self.session_cookie = False
 
-    def _raw_api_call(self, method, parameters = {}, files = None):
+    def _raw_api_call(self, method, parameters={}, monitor_callback=None):
         url = "%s/%s" % (self.api_base, method)
-        if files is not None:
+        if parameters != {}:
+            m = encoder.MultipartEncoderMonitor.from_fields(fields=parameters, encoding='utf-8', callback=monitor_callback)
             if self.session_cookie:
-                r = self.session.post(url, data=parameters, cookies={'session' : self.session_cookie}, files=files)
+                r = self.session.post(url, data=m, cookies={'session': self.session_cookie},
+                                      headers={'Content-Type': m.content_type})
             else:
-                r = self.session.post(url, data=parameters, files=files)
+                r = self.session.post(url, data=m, headers={'Content-Type': m.content_type})
         else:
             if self.session_cookie:
-                r = self.session.get(url, params=parameters, cookies={'session' : self.session_cookie})
+                r = self.session.get(url, cookies={'session': self.session_cookie})
             else:
-                r = self.session.get(url, params=parameters)
+                r = self.session.get(url)
         if r.status_code == 200 and r.json()['success']:
             return r
         else:
@@ -85,19 +88,21 @@ class CapeClient:
         :param offset: The starting point in the list of answers, used in conjunction with number_of_items to retrieve multiple batches of answers.
         :return: A list of answers
         """
+        params = {'token': token,
+                  'question': question,
+                  'threshold': threshold,
+                  'documentIds': str(document_ids),
+                  'documentsOnly': str(documents_only),
+                  'speedOrAccuracy': speed_or_accuracy,
+                  'numberOfItems': str(number_of_items),
+                  'offset': str(offset)}
         if len(document_ids) == 0:
-            document_ids = ''
-        r = self._raw_api_call('answer', {'token': token,
-                                          'question': question,
-                                          'threshold': threshold,
-                                          'documentIds': str(document_ids),
-                                          'documentsOnly': str(documents_only),
-                                          'speedOrAccuracy': speed_or_accuracy,
-                                          'numberOfItems': number_of_items,
-                                          'offset': offset})
+            params.pop('documentIds')
+        r = self._raw_api_call('answer', params)
         return r.json()['result']['items']
 
-    def upload_document(self, title, text=None, file_path=None, document_id='', origin='', replace=False):
+    def upload_document(self, title, text=None, file_path=None, document_id='', origin='', replace=False,
+                        monitor_callback=None):
         """
         Create a new document or replace an existing document.
 
@@ -107,6 +112,7 @@ class CapeClient:
         :param document_id: The ID to give the new document (Default: An SHA256 hash of the document contents)
         :param origin: Where the document came from
         :param replace: If true and a document already exists with the same document ID it will be overwritten with the new upload. If false an error is returned when a documentId already exists.
+        :param monitor_callback:
         :return: The ID of the uploaded document
         """
         if text is not None:
@@ -114,15 +120,15 @@ class CapeClient:
                                                        'text': text,
                                                        'documentId': document_id,
                                                        'origin': origin,
-                                                       'replace': str(replace)})
+                                                       'replace': str(replace)}, monitor_callback=monitor_callback)
         elif file_path is not None:
             directory, file_name = os.path.split(file_path)
             fh = open(file_path, 'rb')
             r = self._raw_api_call('upload-document', {'title': title,
-                                                       'text': text,
+                                                       'text': fh,
                                                        'documentId': document_id,
                                                        'origin': origin,
-                                                       'replace': str(replace)}, {'file' : fh})
+                                                       'replace': str(replace)}, monitor_callback=monitor_callback)
             fh.close()
         else:
             raise CapeException("Either the 'text' or the 'file_path' parameter are required for document uploads.")

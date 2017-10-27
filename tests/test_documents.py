@@ -1,4 +1,5 @@
-import pytest
+import pytest, hashlib
+from unittest.mock import Mock
 from cape.client import CapeClient
 from cape.client import CapeException
 
@@ -8,7 +9,7 @@ def test_text_upload():
     cc = CapeClient()
     cc.login('blo', 'bla')
     document_id = cc.upload_document("Cape API Documentation", document_text, origin='cape_api.txt')
-    assert document_id is not None
+    assert document_id == hashlib.sha256(document_text.encode('utf-8')).hexdigest()
 
 def test_text_upload_without_login():
     with pytest.raises(CapeException):
@@ -22,6 +23,7 @@ def test_file_upload():
     fh.write(document_text)
     fh.close()
     document_id = cc.upload_document("Cape API Documentation", file_path="/tmp/cape_api.txt")
+    assert document_id == hashlib.sha256(document_text.encode('utf-8')).hexdigest()
 
 def test_file_upload_without_login():
     with pytest.raises(CapeException):
@@ -30,6 +32,17 @@ def test_file_upload_without_login():
         fh.write(document_text)
         fh.close()
         cc.upload_document("Cape API Documentation", file_path="/tmp/cape_api.txt")
+
+def test_large_upload():
+    cc = CapeClient()
+    cc.login('blo', 'bla')
+    fh = open("/tmp/large_cape_api.txt", "w")
+    fh.write(document_text * 100000)
+    fh.close()
+    upload_cb = Mock()
+    document_id = cc.upload_document("Cape API Large Document", file_path="/tmp/large_cape_api.txt", monitor_callback=upload_cb)
+    upload_cb.assert_called()
+    assert document_id == hashlib.sha256((document_text * 100000).encode('utf-8')).hexdigest()
 
 def test_text_and_file_hashes_match():
     cc = CapeClient()
