@@ -8,6 +8,9 @@ API_VERSION = 0.1
 
 
 class CapeClient:
+    """
+        The CapeClient provides access to all methods of the Cape API.
+    """
 
     def __init__(self, api_base='https://ui.thecape.ai/mock/full/api'):
         """
