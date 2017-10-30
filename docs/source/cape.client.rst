@@ -1,6 +1,8 @@
 cape\.client package
 ====================
 
+..  _api-docs:
+
 Module contents
 ---------------
 

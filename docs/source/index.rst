@@ -3,18 +3,21 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Cape API Client Library's documentation!
-===================================================
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+Welcome to the Cape API client library's documentation!
+=======================================================
 
 
+..  toctree::
+    :maxdepth: 2
+    :caption: Contents:
 
-Indices and tables
-==================
+    examples
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+*   :ref:`API Documentation <api-docs>`
+*   :ref:`genindex`
+*   :ref:`search`
+
+..  toctree::
+    :hidden:
+
+    modules

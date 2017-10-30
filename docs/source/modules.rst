@@ -4,4 +4,4 @@ cape
 .. toctree::
    :maxdepth: 4
 
-   cape
+   cape.client
