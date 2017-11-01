@@ -68,6 +68,15 @@ class CapeClient:
         self._raw_api_call('logout')
         self.session_cookie = False
 
+    def get_admin_token(self):
+        """
+        Retrieve the admin token for the currently logged in user.
+
+        :return: An admin token
+        """
+        r = self._raw_api_call('get-admin-token')
+        return r.json()['result']['adminToken']
+
     def get_user_token(self):
         """
         Retrieve a user token suitable for making 'answer' requests.

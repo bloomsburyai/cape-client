@@ -43,3 +43,10 @@ def test_get_profile():
     cc.login('blo', 'bla')
     profile = cc.get_profile()
     assert len(profile) > 0
+
+
+def test_get_admin_token():
+    cc = CapeClient()
+    cc.login('blo', 'bla')
+    admin_token = cc.get_admin_token()
+    assert admin_token is not None
