@@ -349,11 +349,11 @@ Each document in the list contains the following properties:
     :header: "Property", "Description"
     :delim: |
 
-    id	358e1b77c9bcc353946dfe107d6b32ff	The ID of this document
-title	API Documentation	The document's title (specified at upload)
-origin	cape_api.txt	Where this document originally came from
-text	Welcome to the Cape API 0.1. Hopefully it's pretty easy to use.	The contents of the document
-created	1508161723	Timestamp of when this document was first uploaded
+    id          |	The ID of this document
+    title       |	The document's title (specified at upload)
+    origin	    |	Where this document originally came from
+    text	    |   The contents of the document
+    created	    |	Timestamp of when this document was first uploaded
 
 
 Managing Saved Replies
