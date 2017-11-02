@@ -12,17 +12,21 @@ class CapeClient:
         The CapeClient provides access to all methods of the Cape API.
     """
 
-    def __init__(self, api_base='https://ui.thecape.ai/mock/full/api'):
+    def __init__(self, api_base='https://ui.thecape.ai/mock/full/api', admin_token=None):
         """
 
         :param api_base: The URL to send API requests to.
+        :param admin_token: An admin token to authenticate with.
         """
         self.api_base = "%s/%s" % (api_base, API_VERSION)
         self.session = Session()
         self.session_cookie = False
+        self.admin_token = admin_token
 
     def _raw_api_call(self, method, parameters={}, monitor_callback=None):
         url = "%s/%s" % (self.api_base, method)
+        if self.admin_token:
+            parameters['adminToken'] = self.admin_token
         if parameters != {}:
             m = encoder.MultipartEncoderMonitor.from_fields(fields=parameters, encoding='utf-8', callback=monitor_callback)
             if self.session_cookie:
