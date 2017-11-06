@@ -1,6 +1,7 @@
 import pytest
 from cape.client import CapeClient
 from cape.client import CapeException
+from .fixtures import cc
 
 
 def test_login():
@@ -25,9 +26,7 @@ def test_failed_login():
         cc.login('invalid', 'invalid')
 
 
-def test_get_token():
-    cc = CapeClient()
-    cc.login('blo', 'bla')
+def test_get_token(cc):
     token = cc.get_user_token()
     assert token is not None
 
@@ -38,15 +37,11 @@ def test_get_token_without_login():
         cc.get_user_token()
 
 
-def test_get_profile():
-    cc = CapeClient()
-    cc.login('blo', 'bla')
+def test_get_profile(cc):
     profile = cc.get_profile()
     assert len(profile) > 0
 
 
-def test_get_admin_token():
-    cc = CapeClient()
-    cc.login('blo', 'bla')
+def test_get_admin_token(cc):
     admin_token = cc.get_admin_token()
     assert admin_token is not None
