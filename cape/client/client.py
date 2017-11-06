@@ -25,8 +25,11 @@ class CapeClient:
 
     def _raw_api_call(self, method, parameters={}, monitor_callback=None):
         url = "%s/%s" % (self.api_base, method)
-        if self.admin_token:
-            parameters['adminToken'] = self.admin_token
+        if 'token' in parameters:
+            token = parameters.pop('token')
+            url += "?token=%s" % token
+        elif self.admin_token:
+            url += "?adminToken=%s" % self.admin_token
         if parameters != {}:
             m = encoder.MultipartEncoderMonitor.from_fields(fields=parameters, encoding='utf-8', callback=monitor_callback)
             if self.session_cookie:
