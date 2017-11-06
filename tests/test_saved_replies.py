@@ -31,3 +31,38 @@ def test_create_saved_reply(cc):
 def test_delete_saved_reply(cc):
     reply_id = cc.delete_saved_reply(52)
     assert reply_id == '52'
+
+
+def test_add_paraphrase_question(cc):
+    question_id = cc.add_paraphrase_question(12, 'How old are you?')
+    assert question_id is not None
+
+
+def test_edit_paraphrase_question(cc):
+    question_id = cc.edit_paraphrase_question(12, 'What is your age?')
+    assert question_id == '12'
+
+
+def test_edit_canonical_question(cc):
+    reply_id = cc.edit_canonical_question(14, 'What age are you?')
+    assert reply_id == '14'
+
+
+def test_delete_paraphrase_question(cc):
+    question_id = cc.delete_paraphrase_question(12)
+    assert question_id == '12'
+
+
+def test_add_answer(cc):
+    answer_id = cc.add_answer(52, 'Grey')
+    assert answer_id is not None
+
+
+def test_edit_answer(cc):
+    answer_id = cc.edit_answer(7, 'Gray')
+    assert answer_id == '7'
+
+
+def test_delete_answer(cc):
+    answer_id = cc.delete_answer(7)
+    assert answer_id == '7'

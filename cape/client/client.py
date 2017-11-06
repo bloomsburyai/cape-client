@@ -157,26 +157,14 @@ class CapeClient:
         r = self._raw_api_call('mark-inbox-read', {'inboxId': str(inbox_id)})
         return r.json()['result']['inboxId']
 
-    def link_inbox_to_reply(self, inbox_id, reply_id):
+    def archive_inbox(self, inbox_id):
         """
-        When an inbox item is linked to a saved reply it is automatically marked as being answered.
+        Archive an inbox item.
 
-        :param inbox_id: The inbox item to link
-        :param reply_id: The saved reply to link it to
-        :return: The ID of the inbox item and the reply it was linked to
+        :param inbox_id: The inbox item to archive
+        :return: The ID of the inbox item that was archived
         """
-        r = self._raw_api_call('link-inbox-to-reply', {'inboxId': str(inbox_id),
-                                                       'replyId': str(reply_id)})
-        return r.json()['result']
-
-    def unlink_inbox_from_reply(self, inbox_id):
-        """
-        When an inbox item is unlinked from a saved reply it is automatically returned to being unanswered.
-
-        :param inbox_id: The inbox item to unlink
-        :return: The ID of the inbox item that was unlinked
-        """
-        r = self._raw_api_call('unlink-inbox-from-reply', {'inboxId': str(inbox_id)})
+        r = self._raw_api_call('archive-inbox', {'inboxId': str(inbox_id)})
         return r.json()['result']['inboxId']
 
     def get_saved_replies(self, search_term='', number_of_items=30, offset=0):
@@ -218,6 +206,81 @@ class CapeClient:
         """
         r = self._raw_api_call('delete-saved-reply', {'replyId': str(reply_id)})
         return r.json()['result']['replyId']
+
+    def add_paraphrase_question(self, reply_id, question):
+        """
+        Add a new paraphrase question to an existing saved reply.
+
+        :param reply_id: The ID of the saved reply to add this question to
+        :param question: The new paraphrase of this saved reply's canonical question
+        :return: The ID of the new question
+        """
+        r = self._raw_api_call('add-paraphrase-question', {'replyId': str(reply_id), 'question': question})
+        return r.json()['result']['questionId']
+
+    def edit_paraphrase_question(self, question_id, question):
+        """
+        Modify an existing paraphrase question.
+
+        :param question_id: The ID of the question to modify
+        :param question: The modified question text
+        :return: The ID of the question that was modified
+        """
+        r = self._raw_api_call('edit-paraphrase-question', {'questionId': str(question_id), 'question': question})
+        return r.json()['result']['questionId']
+
+    def edit_canonical_question(self, reply_id, question):
+        """
+        Modify the canonical question belonging to a saved reply.
+
+        :param reply_id: The ID of the saved reply to modify the canonical question of
+        :param question: The modified question text
+        :return: The ID of the saved reply that was modified
+        """
+        r = self._raw_api_call('edit-canonical-question', {'replyId': str(reply_id), 'question': question})
+        return r.json()['result']['replyId']
+
+    def delete_paraphrase_question(self, question_id):
+        """
+        Delete a paraphrase question.
+
+        :param question_id: The ID of the paraphrase question to delete
+        :return: The ID of the paraphrase question that was deleted
+        """
+        r = self._raw_api_call('delete-paraphrase-question', {'questionId': str(question_id)})
+        return r.json()['result']['questionId']
+
+    def add_answer(self, reply_id, answer):
+        """
+        Add a new answer to an existing saved reply.
+
+        :param reply_id: The ID of the saved reply to add this answer to
+        :param answer: A new answer to add to the saved reply
+        :return: The ID of the newly created answer
+        """
+        r = self._raw_api_call('add-answer', {'replyId': str(reply_id), 'answer': answer})
+        return r.json()['result']['answerId']
+
+    def edit_answer(self, answer_id, answer):
+        """
+        Modify an existing answer
+
+        :param answer_id: The ID of the answer to edit
+        :param answer: The modified answer text
+        :return: The ID of the answer that was modified
+        """
+        r = self._raw_api_call('edit-answer', {'answerId': str(answer_id), 'answer': answer})
+        return r.json()['result']['answerId']
+
+    def delete_answer(self, answer_id):
+        """
+        Delete an existing an answer
+
+        :param answer_id: The ID of the answer to delete
+        :return: The ID of the answer that was deleted
+        """
+        r = self._raw_api_call('delete-answer', {'answerId': str(answer_id)})
+        return r.json()['result']['answerId']
 
     def get_documents(self, document_ids=[], number_of_items=30, offset=0):
         """
