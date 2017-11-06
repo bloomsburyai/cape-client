@@ -2,7 +2,7 @@ import os.path
 from requests import Session
 from requests_toolbelt.multipart import encoder
 from .exceptions import CapeException
-
+import json
 
 API_VERSION = 0.1
 
@@ -30,8 +30,11 @@ class CapeClient:
             url += "?token=%s" % token
         elif self.admin_token:
             url += "?adminToken=%s" % self.admin_token
+        if 'documentIds' in parameters and not isinstance(parameters['documentIds'], str):
+            parameters['documentIds'] = json.dumps(parameters['documentIds'])
         if parameters != {}:
-            m = encoder.MultipartEncoderMonitor.from_fields(fields=parameters, encoding='utf-8', callback=monitor_callback)
+            m = encoder.MultipartEncoderMonitor.from_fields(fields=parameters, encoding='utf-8',
+                                                            callback=monitor_callback)
             if self.session_cookie:
                 r = self.session.post(url, data=m, cookies={'session': self.session_cookie},
                                       headers={'Content-Type': m.content_type})
@@ -55,7 +58,7 @@ class CapeClient:
         :param password: The password to log in with
         :return:
         """
-        r = self._raw_api_call('login', {'login' : login, 'password' : password})
+        r = self._raw_api_call('login', {'login': login, 'password': password})
         self.session_cookie = r.cookies['session']
 
     def logged_in(self):
@@ -102,7 +105,8 @@ class CapeClient:
         r = self._raw_api_call('get-profile')
         return r.json()['result']
 
-    def answer(self, question, token, threshold='high', document_ids=[], documents_only=False, speed_or_accuracy='balanced', number_of_items=1, offset=0):
+    def answer(self, question, token, threshold='high', document_ids=[], documents_only=False,
+               speed_or_accuracy='balanced', number_of_items=1, offset=0):
         """
         Provide a list of answers to a given question.
 
