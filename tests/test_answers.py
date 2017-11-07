@@ -5,7 +5,8 @@ from .fixtures import cc
 def test_answer(cc):
     token = cc.get_user_token()
     answers = cc.answer(token, "Is this API easy to use?")
-    assert answers[0]["text"] == "Hopefully it's pretty easy"
+    assert len(answers) == 1
+    assert answers[0]["text"] is not None
 
 
 def test_multiple_answers(cc):
