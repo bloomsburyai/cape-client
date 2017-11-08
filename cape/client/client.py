@@ -126,7 +126,7 @@ class CapeClient:
                   'savedReplyThreshold': saved_reply_threshold,
                   'documentThreshold': document_threshold,
                   'documentIds': str(document_ids),
-                  'documentsOnly': str(source_type),
+                  'sourceType': str(source_type),
                   'speedOrAccuracy': speed_or_accuracy,
                   'numberOfItems': str(number_of_items),
                   'offset': str(offset)}
