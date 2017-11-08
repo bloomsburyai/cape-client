@@ -310,7 +310,7 @@ class CapeClient:
         return r.json()['result']
 
     def upload_document(self, title, text=None, file_path=None, document_id='', origin='', replace=False,
-                        monitor_callback=None):
+                        document_type=None, monitor_callback=None):
         """
         Create a new document or replace an existing document.
 
@@ -320,16 +320,21 @@ class CapeClient:
         :param document_id: The ID to give the new document (Default: An SHA256 hash of the document contents)
         :param origin: Where the document came from
         :param replace: If true and a document already exists with the same document ID it will be overwritten with the new upload. If false an error is returned when a documentId already exists.
-        :param monitor_callback:
+        :param document_type: Whether this document was created by inputting text or uploading a file (if not set this will be automatically determined)
+        :param monitor_callback: A method to call with updates on the file upload progress
         :return: The ID of the uploaded document
         """
         if text is not None:
+            if document_type is None:
+                document_type = 'text'
             r = self._raw_api_call('upload-document', {'title': title,
                                                        'text': text,
                                                        'documentId': document_id,
                                                        'origin': origin,
                                                        'replace': str(replace)}, monitor_callback=monitor_callback)
         elif file_path is not None:
+            if document_type is None:
+                document_type = 'file'
             directory, file_name = os.path.split(file_path)
             fh = open(file_path, 'rb')
             r = self._raw_api_call('upload-document', {'title': title,
