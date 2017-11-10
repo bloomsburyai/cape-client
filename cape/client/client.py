@@ -105,15 +105,14 @@ class CapeClient:
         r = self._raw_api_call('get-profile')
         return r.json()['result']
 
-    def answer(self, question, token, saved_reply_threshold=None, document_threshold=None, document_ids=[],
+    def answer(self, question, token, threshold=None, document_ids=[],
                source_type='all', speed_or_accuracy='balanced', number_of_items=1, offset=0):
         """
         Provide a list of answers to a given question.
 
         :param question: The question to ask
         :param token: A token retrieved from get_user_token
-        :param saved_reply_threshold: The minimum confidence of saved replies to return ('high'/'medium'/'low')
-        :param document_threshold: The minimum confidence of machine reading on documents to return ('high'/'medium'/'low')
+        :param threshold: The minimum confidence of answers to return ('veryhigh'/'high'/'medium'/'low'/'verylow')
         :param document_ids: A list of documents to search for answers (Default: all documents)
         :param source_type: Whether to search documents, saved replies or all ('document'/'saved_reply'/'all')
         :param speed_or_accuracy: Prioritise speed or accuracy in answers ('speed'/'accuracy'/'balanced')
@@ -123,8 +122,7 @@ class CapeClient:
         """
         params = {'token': token,
                   'question': question,
-                  'savedReplyThreshold': saved_reply_threshold,
-                  'documentThreshold': document_threshold,
+                  'threshold': threshold,
                   'documentIds': str(document_ids),
                   'sourceType': str(source_type),
                   'speedOrAccuracy': speed_or_accuracy,
@@ -132,10 +130,8 @@ class CapeClient:
                   'offset': str(offset)}
         if len(document_ids) == 0:
             params.pop('documentIds')
-        if saved_reply_threshold is None:
-            params.pop('savedReplyThreshold')
-        if document_threshold is None:
-            params.pop('documentThreshold')
+        if threshold is None:
+            params.pop('threshold')
         r = self._raw_api_call('answer', params)
         return r.json()['result']['items']
 
