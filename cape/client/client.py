@@ -356,25 +356,6 @@ class CapeClient:
         r = self._raw_api_call('delete-document', {'documentId': document_id})
         return r.json()['result']['documentId']
 
-    def get_default_message(self):
-        """
-        Retrieve the message used when the system isn't able to find an answer above the requested threshold.
-
-        :return: The message currently used when an answer couldn't be found.
-        """
-        r = self._raw_api_call('get-default-message')
-        return r.json()['result']['message']
-
-    def set_default_message(self, message):
-        """
-        Set the message used when the system isn't able to find an answer above the requested threshold.
-
-        :param message: The new default message to set.
-        :return: The new default message that's just been set
-        """
-        r = self._raw_api_call('set-default-message', {'message': message})
-        return r.json()['result']['message']
-
     def get_default_threshold(self):
         """
         Retrieve the default threshold used if one isn't explicitly specified when calling answer()
