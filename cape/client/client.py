@@ -12,7 +12,7 @@ class CapeClient:
         The CapeClient provides access to all methods of the Cape API.
     """
 
-    def __init__(self, api_base='https://ui.thecape.ai/mock/full/api', admin_token=None):
+    def __init__(self, api_base='https://responder.thecape.ai/api', admin_token=None):
         """
 
         :param api_base: The URL to send API requests to.

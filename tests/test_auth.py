@@ -1,28 +1,27 @@
 import pytest
 from cape.client import CapeClient
 from cape.client import CapeException
-from .fixtures import cc
+from .fixtures import cc, API_URL, UNLUCKY_API_URL
 
 
 def test_login():
-    cc = CapeClient()
+    cc = CapeClient(API_URL)
     assert cc.logged_in() == False
     cc.login('blo', 'bla')
     assert cc.logged_in() == True
 
 
 def test_logout():
-    cc = CapeClient()
+    cc = CapeClient(API_URL)
     cc.login('blo', 'bla')
     assert cc.logged_in() == True
     cc.logout()
     assert cc.logged_in() == False
 
 
-@pytest.mark.skip("Log in will always success against the mock API, so this is currently untestable")
 def test_failed_login():
     with pytest.raises(CapeException):
-        cc = CapeClient()
+        cc = CapeClient(UNLUCKY_API_URL)
         cc.login('invalid', 'invalid')
 
 
@@ -33,7 +32,7 @@ def test_get_token(cc):
 
 def test_get_token_without_login():
     with pytest.raises(CapeException):
-        cc = CapeClient()
+        cc = CapeClient(API_URL)
         cc.get_user_token()
 
 
