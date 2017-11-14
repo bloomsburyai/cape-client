@@ -2,7 +2,7 @@ import pytest, hashlib
 from unittest.mock import Mock
 from cape.client import CapeClient
 from cape.client import CapeException
-from .fixtures import cc
+from .fixtures import cc, API_URL
 
 document_text = "Welcome to the Cape API 0.1. Hopefully it's pretty easy to use."
 
@@ -27,7 +27,7 @@ def test_text_upload(cc):
 
 def test_text_upload_without_login():
     with pytest.raises(CapeException):
-        cc = CapeClient()
+        cc = CapeClient(API_URL)
         cc.upload_document("Cape API Documentation", document_text, origin='cape_api.txt')
 
 
@@ -41,7 +41,7 @@ def test_file_upload(cc):
 
 def test_file_upload_without_login():
     with pytest.raises(CapeException):
-        cc = CapeClient()
+        cc = CapeClient(API_URL)
         fh = open("/tmp/cape_api.txt", "w")
         fh.write(document_text)
         fh.close()
