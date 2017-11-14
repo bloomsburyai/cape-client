@@ -415,7 +415,7 @@ Saved replies must have a unique question. If this question already exists then 
 Deleting Saved Replies
 ^^^^^^^^^^^^^^^^^^^^^^
 
-To delete a saved reply simple pass its ID to the :meth:`cape.client.CapeClient.delete_saved_reply` method::
+To delete a saved reply pass its ID to the :meth:`cape.client.CapeClient.delete_saved_reply` method::
 
     from cape.client import CapeClient
 
