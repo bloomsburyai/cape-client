@@ -112,7 +112,7 @@ class CapeClient:
 
         :param question: The question to ask
         :param token: A token retrieved from get_user_token
-        :param threshold: The minimum confidence of answers to return ('veryhigh'/'high'/'medium'/'low'/'verylow')
+        :param threshold: The minimum confidence of answers to return ('verylow'/'low'/'medium'/'medium'/'veryhigh')
         :param document_ids: A list of documents to search for answers (Default: all documents)
         :param source_type: Whether to search documents, saved replies or all ('document'/'saved_reply'/'all')
         :param speed_or_accuracy: Prioritise speed or accuracy in answers ('speed'/'accuracy'/'balanced')
@@ -315,7 +315,7 @@ class CapeClient:
         :param file_path: A file to upload (either text or file_path must be supplied)
         :param document_id: The ID to give the new document (Default: An SHA256 hash of the document contents)
         :param origin: Where the document came from
-        :param replace: If true and a document already exists with the same document ID it will be overwritten with the new upload. If false an error is returned when a documentId already exists.
+        :param replace: If true and a document already exists with the same document ID it will be overwritten with the new upload. If false an error is returned when a document ID already exists.
         :param document_type: Whether this document was created by inputting text or uploading a file (if not set this will be automatically determined)
         :param monitor_callback: A method to call with updates on the file upload progress
         :return: The ID of the uploaded document
@@ -356,7 +356,7 @@ class CapeClient:
         """
         Retrieve the default threshold used if one isn't explicitly specified when calling answer()
 
-        :return: The current default threshold (either 'low', 'medium' or 'high')
+        :return: The current default threshold (either 'verylow', 'low', 'medium', 'high' or 'veryhigh')
         """
         r = self._raw_api_call('get-default-threshold')
         return r.json()['result']['threshold']
@@ -365,7 +365,7 @@ class CapeClient:
         """
         Set the default threshold used if one isn't explicitly specified when calling answer()
 
-        :param threshold: The new default threshold to set, must be either 'low', 'medium' or 'high'
+        :param threshold: The new default threshold to set, must be either 'verylow', 'low', 'medium', 'high' or 'veryhigh'
         :return: The new default threshold that's just been set
         """
         r = self._raw_api_call('set-default-threshold', {'threshold': threshold})
