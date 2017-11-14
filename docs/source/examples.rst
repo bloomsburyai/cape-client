@@ -5,9 +5,34 @@ Examples
     :local:
 
 
+.. _admin-authentication:
+
+Admin Authentication
+--------------------
+
+There are two primary mechanisms for authentication within Cape: admin authentication, which provides full access to
+your account and :ref:`user authentication <user-authentication>`, which only provides access to the answer endpoint.
+
+There are two different ways to authenticate as an administrator, either through the
+:meth:`cape.client.CapeClient.login` method::
+
+    from cape.client import CapeClient
+
+    cc = CapeClient()
+    cc.login('username', 'password')
+
+Alternatively you can authenticate using an admin token when creating the CapeClient object. This admin token can be
+retrieved through the `Cape UI <http://ui.thecape.ai>`_::
+
+    from cape.client import CapeClient
+
+    cc = CapeClient(admin_token='youradmintoken')
+
+
 Answering Questions
 -------------------
 
+.. _user-authentication:
 
 Authentication
 ^^^^^^^^^^^^^^
@@ -15,7 +40,7 @@ Authentication
 Requests to the answer endpoint require a "user token", this enables developers to provide access to their Cape AI
 by embedding their user token within their application.
 
-The user token for your AI can either be retrieved through the `Cape UI <http://alpha.thecape.ai>`_ or through a call
+The user token for your AI can either be retrieved through the `Cape UI <http://ui.thecape.ai>`_ or through a call
 to the API::
 
     from cape.client import CapeClient
@@ -65,14 +90,16 @@ details on fetching multiple results see the :ref:`multiple answers <multiple-an
 
 Each answer in the list contains the following properties:
 
+..  _answer-objects:
+
 ..  csv-table::
     :header: "Property", "Description"
     :delim: |
 
     text        |   The proposed answer to the question
     confidence  |   How confident the AI is that this is the correct answer
-    sourceType  |   Whether this result came from a 'document'\, an 'faq' or 'notfound' if an answer wasn't found
-    sourceId    |   The ID of the document or FAQ this answer was found in (depending on sourceType)
+    sourceType  |   Whether this result came from a 'document'\ or a 'saved_reply'
+    sourceId    |   The ID of the document or saved reply this answer was found in (depending on sourceType)
     startOffset |   The starting position of this answer in the document (if sourceType is 'document')
     endOffset   |   The end position of this answer in the document (if sourceType is 'document')
 
@@ -170,22 +197,22 @@ set of documents we can specify the *document_ids* when requesting an answer. Fo
                                         'employee_info_2018.txt'])
     print(answers)
 
-If we're explicitly searching through a document we may also wish to disable FAQ responses, this can be done with the
-*documents_only* parameter::
+If we're explicitly searching through a document we may also wish to disable saved reply responses, this can be done with the
+*source_type* parameter::
 
     answers = cc.answer('When was James born?',
                         USER_TOKEN,
                         document_ids = ['employee_info_2016.txt',
                                         'employee_info_2017.txt',
                                         'employee_info_2018.txt'],
-                        documents_only = True)
+                        source_type = 'document')
 
 
 Managing Documents
 ------------------
 
 Documents can be uploaded, updated and deleted using the client API. This functionality is only available to users with
-administrative access and so requires them to login with the :meth:`cape.client.CapeClient.login` method.
+:ref:`administrative access <admin-authentication>`.
 
 
 Creating Documents
@@ -249,7 +276,6 @@ updates about the upload's progress::
     doc_id = cc.upload_document("Document title",
                                 file_path="/tmp/large_example.txt",
                                 monitor_callback=upload_cb)
-    print(doc_id)
 
 This will then print a series of status updates showing the progress of our file upload::
 
@@ -362,7 +388,7 @@ Managing Saved Replies
 Saved replies are made up of a pair consisting of a canonical question and the response it should produce. In addition
 to the canonical question a saved reply may have many paraphrased questions associated with it which should produce the
 same answer (e.g. "How old are you?" vs "What is your age?"). This functionality is only available to users with
-administrative access and so requires them to login with the :meth:`cape.client.CapeClient.login` method.
+:ref:`administrative access <admin-authentication>`.
 
 
 Creating Saved Replies
@@ -380,7 +406,7 @@ answer pair::
 
 This will respond with the ID of the new reply:
 
-    ``13``
+    ``"f9f1cf90-c3b1-11e7-91a1-9801a7ae6c69"``
 
 Saved replies must have a unique question. If this question already exists then an error is returned.
 
@@ -402,7 +428,7 @@ Retrieving Saved Replies
 
 To retrieve a list of all saved replies use the :meth:`cape.client.CapeClient.get_saved_replies` method::
 
-    from cape.client improt CapeClient
+    from cape.client import CapeClient
 
     cc = CapeClient()
     cc.login('username', 'password')
@@ -415,18 +441,39 @@ This will return a list of replies::
         'totalItems': 2,
         'items': [
             {
-                'id': 322,
-                'question': 'How old are you?',
-                'answer': '18',
-                'uses': 15,
-                'created': 1508161734
+                'id': 'd277e000-c3c3-11e7-8d29-d15d28ee5381',
+                'canonicalQuestion': 'How old are you?',
+                'answers': [
+                    {
+                        'id': 'd2780710-c3c3-11e7-8d29-d15d28ee5381',
+                        'answer': '18'
+                    }
+                ],
+                'paraphraseQuestions': [
+                    {
+                        'id': 'd2780711-c3c3-11e7-8d29-d15d28ee5381',
+                        'question': 'What is your age?'
+                    },
+                    {
+                        'id': 'd2780712-c3c3-11e7-8d29-d15d28ee5381',
+                        'question': 'How many years old are you?'
+                    }
+                ],
+                'created': 1508161734,
+                'modified': 1508161734
             },
             {
-                'id': 321,
-                'question': 'What colour is the sky?',
-                'answer': 'Blue',
-                'uses': 1,
-                'created': 1508161323
+                'id': 'd2780713-c3c3-11e7-8d29-d15d28ee5381',
+                'canonicalQuestion': 'What colour is the sky?',
+                'answers': [
+                    {
+                        'id': 'd2780714-c3c3-11e7-8d29-d15d28ee5381',
+                        'answer': 'Blue'
+                    }
+                ],
+                'paraphraseQuestions': [],
+                'created': 1508161323,
+                'modified': 1508161323
             }
         ]
     }
@@ -437,28 +484,218 @@ Each saved reply in the list contains the following properties:
     :header: "Property", "Description"
     :delim: |
 
-    id          |   The reply ID
-    question    |	The question to which the saved reply corresponds
-    answer      |   The saved answer to respond with
-    uses        |   How many times this saved reply is used to answer other questions (paraphrases)
-    created     |   Timestamp indicating when this saved reply was created
+    id                  |   The reply ID
+    canonicalQuestion   |   The question to which the saved reply corresponds
+    answers             |	A list of saved answers, one of which will be selected at random as the response to the question.
+    paraphraseQuestions	|	A list of questions which paraphase the canonical question
+    modified	        |	Timestamp indicating when this saved reply was last modified
+    created	            |	Timestamp indicating when this saved reply was created
 
+It's also possible to search saved replies, for example to retrieve only saved replies containing the word 'blue'::
+
+    from cape.client import CapeClient
+
+    cc = CapeClient()
+    cc.login('username', 'password')
+    replies = cc.get_saved_replies(search_term='blue')
+
+
+Editing Saved Replies
+^^^^^^^^^^^^^^^^^^^^^
+
+There are three different parts of a saved reply that can be edited, the canonical question, the paraphrase questions
+and the answers.
+
+
+Adding Paraphrase Questions
+"""""""""""""""""""""""""""
+
+Paraphrase questions are alternative phrasings of the canonical question which should produce the same answer. For
+example "How old are you?" can be considered a paraphrase of "What is your age?". These can be added with the
+:meth:`cape.client.CapeClient.add_paraphrase_question` method::
+
+    from cape.client import CapeClient
+
+    cc = CapeClient()
+    cc.login('username', 'password')
+    question_id = cc.add_paraphrase_question("f9f1cf90-c3b1-11e7-91a1-9801a7ae6c69", 'What is your age?')
+    print(question_id)
+
+This will respond with the ID of the newly created question::
+
+    21e9689e-c3b2-11e7-8a22-9801a7ae6c69
+
+
+Editing Paraphrase Questions
+""""""""""""""""""""""""""""
+
+To edit a paraphrase question call :meth:`cape.client.CapeClient.edit_paraphrase_question` with the ID of the question
+to edit and the new question text to modify it with::
+
+    from cape.client import CapeClient
+
+    cc = CapeClient()
+    cc.login('blo', 'bla')
+    cc.edit_paraphrase_question("21e9689e-c3b2-11e7-8a22-9801a7ae6c69", 'How many years old are you?')
+
+
+Deleting Paraphrase Questions
+"""""""""""""""""""""""""""""
+
+To delete a paraphrase question simply call :meth:`cape.client.CapeClient.delete_paraphrase_question` with the ID of
+question to be deleted::
+
+    from cape.client import CapeClient
+
+    cc = CapeClient()
+    cc.login('blo', 'bla')
+    cc.delete_paraphrase_question("21e9689e-c3b2-11e7-8a22-9801a7ae6c69")
+
+
+Adding Answers
+""""""""""""""
+
+If multiple answers are added to a saved reply then one will be selected at random when responding. Additional answers
+can be added with the :meth:`cape.client.CapeClient.add_answer` method::
+
+    from cape.client import CapeClient
+
+    cc = CapeClient()
+    cc.login('blo', 'bla')
+    answer_id = cc.add_answer("68c445cc-c3b2-11e7-8a88-9801a7ae6c69", 'Grey')
+    print(answer_id)
+
+This will respond with the ID of the new answer:
+
+    703acab4-c3b2-11e7-b8b1-9801a7ae6c69
+
+
+Deleting Answers
+""""""""""""""""
+
+To delete an answer call :meth:`cape.client.CapeClient.delete_answer` with the ID of the answer to be deleted::
+
+    from cape.client import CapeClient
+
+    cc = CapeClient()
+    cc.login('blo', 'bla')
+    cc.delete_answer("703acab4-c3b2-11e7-b8b1-9801a7ae6c69")
+
+Because every saved reply must have at least one answer it's not possible to delete the last remaining answer in a saved
+reply, in this case you may wish to consider deleting the saved reply itself.
+
+
+Editing Canonical Questions
+"""""""""""""""""""""""""""
+
+To edit the canonical question call :meth:`cape.client.CapeClient.edit_canonical_question` with the ID of the saved
+reply that it belongs to::
+
+    from cape.client import CapeClient
+
+    cc = CapeClient()
+    cc.login('blo', 'bla')
+    cc.edit_canonical_question("f9f1cf90-c3b1-11e7-91a1-9801a7ae6c69", 'What age are you?')
 
 
 Managing The Inbox
 ------------------
 
-This functionality is only available to users with administrative access and so requires them to login with the
-:meth:`cape.client.CapeClient.login` method.
-
+The inbox provides a list of questions that have been asked by users and the response the system has replied with.
+This functionality is only available to users with :ref:`administrative access <admin-authentication>`.
 
 Retrieving Inbox Items
 ^^^^^^^^^^^^^^^^^^^^^^
+
+To retrieve inbox items call the :meth:`cape.client.CapeClient.get_inbox` method::
+
+    from cape.client import CapeClient
+
+    cc = CapeClient()
+    cc.login('username', 'password')
+    inbox = cc.get_inbox()
+    print(inbox)
+
+This returns a list of inbox items::
+
+    {
+        'totalItems': 2,
+        'items': [
+            {
+                'id': '4124',
+                'answered': False,
+                'read': False,
+                'question': 'Who are you?',
+                'questionSource': 'API',
+                'created': 1508162032,
+                'answers': []
+            },
+            {
+                'id': '4123',
+                'answered': True,
+                'read': False,
+                'question': 'How easy is the API to use?',
+                'questionSource': 'API',
+                'created': 1508161834,
+                'answers': [
+                    {
+                        'text': "Hopefully it's pretty easy",
+                        'confidence': 0.75,
+                        'sourceType': 'document',
+                        'sourceId': '358e1b77c9bcc353946dfe107d6b32ff',
+                        'startOffset': 30,
+                        'endOffset': 56
+                    }
+                ]
+            }
+        ]
+    }
+
+Each inbox item in the list has the following properties:
+
+..  csv-table::
+    :header: "Property", "Description"
+    :delim: |
+
+    id          |	Unique ID for this inbox item
+    question    |	The question that a user asked
+    read        |	Whether this item has been read
+    answered	|	Whether an answer could be found for this question
+    answers     |   A list of :ref:`answer objects <answer-objects>`
+    created     |   Timestamp indicating when this question was asked
+
+Inbox items can be searched and filtered, for example to retrieve only inbox items haven't been read but have been
+answered and contain the word 'API'::
+
+    from cape.client import CapeClient
+
+    cc = CapeClient()
+    cc.login('username', 'password')
+    inbox = cc.get_inbox(read=False, answered=True, search_term='api')
 
 
 Marking Inbox Items As Read
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+To mark an inbox item as having been read call the :meth:`cape.client.CapeClient.mark_inbox_read` method with the ID
+of the inbox item to mark as having been read::
 
-Linking Inbox Items To Saved Replies
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    from cape.client import CapeClient
+
+    cc = CapeClient()
+    cc.login('username', 'password')
+    cc.mark_inbox_read('4123')
+
+
+Archiving Inbox Items
+^^^^^^^^^^^^^^^^^^^^^
+
+Once an inbox item has been archived it will no longer appear in the list of inbox items returned by
+:meth:`cape.client.CapeClient.get_inbox`. To archive an item call :meth:`cape.client.CapeClient.archive_inbox` with the
+ID of the inbox item to archive::
+
+    from cape.client import CapeClient
+
+    cc = CapeClient()
+    cc.login('username', 'password')
+    cc.archive_inbox('4123')
