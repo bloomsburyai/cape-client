@@ -21,7 +21,7 @@ There are two different ways to authenticate as an administrator, either through
     cc = CapeClient()
     cc.login('username', 'password')
 
-Alternatively you can authenticate using an admin token when creating the CapeClient object. This admin token can be
+Or you can authenticate using an admin token when creating the CapeClient object. This admin token can be
 retrieved through the `Cape UI <http://ui.thecape.ai>`_::
 
     from cape.client import CapeClient
@@ -175,7 +175,7 @@ If we then wished to retrieve the next 5 answers we could run::
                         number_of_items=5,
                         offset=5)
 
-Which will return a further 5 answers starting with the 5th one. This allows us to retrieve answers in batches, only
+Which will return a further 5 answers starting with the 6th one. This allows us to retrieve answers in batches, only
 fetching more when the user needs them.
 
 
@@ -183,7 +183,7 @@ Searching Specific Documents
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If we wish to search within a specific document (e.g. the document the user is currently viewing in our application) or
-set of documents we can specify the *document_ids* when requesting an answer. For example::
+in a set of documents we can specify the *document_ids* when requesting an answer. For example::
 
     from cape.client import CapeClient
 
@@ -257,7 +257,7 @@ Because we supplied a *document_id* in this example the document ID we get retur
 
     ``my_document_id``
 
-As large file uploads may take a long time we may wish to provide the user with updates on the progress of our upload.
+As large file uploads could take a long time we may wish to provide the user with updates on the progress of our upload.
 To do this we can provide a callback function via the *monitor_callback* parameter which will provide us with frequent
 updates about the upload's progress::
 
@@ -365,8 +365,8 @@ This will output::
     }
 
 By default this will retrieve 30 documents at a time. The *number_of_items* and *offset* parameters can be used to
-control the size of the batches and retrieve multiple batches of documents, in a similar way to the mechanism described
-in the :ref:`multiple answers <multiple-answers>` section. The response also includes the a *totalItems* property which
+control the size of the batches and retrieve multiple batches of documents (similar to the mechanism described
+in the :ref:`multiple answers <multiple-answers>` section). The response also includes the *totalItems* property which
 tells us the total number of items available (beyond those retrieved in this specific batch).
 
 Each document in the list contains the following properties:
@@ -379,13 +379,14 @@ Each document in the list contains the following properties:
     title       |	The document's title (specified at upload)
     origin	    |	Where this document originally came from
     text	    |   The contents of the document
+    type        |   Whether this document was created by submitting text or from a file upload
     created	    |	Timestamp of when this document was first uploaded
 
 
 Managing Saved Replies
 ----------------------
 
-Saved replies are made up of a pair consisting of a canonical question and the response it should produce. In addition
+Saved replies are made up of a canonical question and the response it should produce. In addition
 to the canonical question a saved reply may have many paraphrased questions associated with it which should produce the
 same answer (e.g. "How old are you?" vs "What is your age?"). This functionality is only available to users with
 :ref:`administrative access <admin-authentication>`.
@@ -406,7 +407,7 @@ answer pair::
 
 This will respond with the ID of the new reply:
 
-    ``"f9f1cf90-c3b1-11e7-91a1-9801a7ae6c69"``
+    ``f9f1cf90-c3b1-11e7-91a1-9801a7ae6c69``
 
 Saved replies must have a unique question. If this question already exists then an error is returned.
 
@@ -420,7 +421,7 @@ To delete a saved reply simple pass its ID to the :meth:`cape.client.CapeClient.
 
     cc = CapeClient()
     cc.login('username', 'password')
-    cc.delete_saved_reply(13)
+    cc.delete_saved_reply("f9f1cf90-c3b1-11e7-91a1-9801a7ae6c69")
 
 
 Retrieving Saved Replies
@@ -478,6 +479,11 @@ This will return a list of replies::
         ]
     }
 
+By default this will retrieve 30 saved replies at a time. The *number_of_items* and *offset* parameters can be used to
+control the size of the batches and retrieve multiple batches of saved replies (similar to the mechanism
+described in the :ref:`multiple answers <multiple-answers>` section). The response also includes the *totalItems*
+property which tells us the total number of items available (beyond those retrieved in this specific batch).
+
 Each saved reply in the list contains the following properties:
 
 ..  csv-table::
@@ -511,7 +517,7 @@ Adding Paraphrase Questions
 """""""""""""""""""""""""""
 
 Paraphrase questions are alternative phrasings of the canonical question which should produce the same answer. For
-example "How old are you?" can be considered a paraphrase of "What is your age?". These can be added with the
+example "What is your age?" can be considered a paraphrase of "How old are you?". These can be added with the
 :meth:`cape.client.CapeClient.add_paraphrase_question` method::
 
     from cape.client import CapeClient
@@ -521,9 +527,9 @@ example "How old are you?" can be considered a paraphrase of "What is your age?"
     question_id = cc.add_paraphrase_question("f9f1cf90-c3b1-11e7-91a1-9801a7ae6c69", 'What is your age?')
     print(question_id)
 
-This will respond with the ID of the newly created question::
+This will respond with the ID of the newly created question:
 
-    21e9689e-c3b2-11e7-8a22-9801a7ae6c69
+    ``21e9689e-c3b2-11e7-8a22-9801a7ae6c69``
 
 
 Editing Paraphrase Questions
@@ -535,7 +541,7 @@ to edit and the new question text to modify it with::
     from cape.client import CapeClient
 
     cc = CapeClient()
-    cc.login('blo', 'bla')
+    cc.login('username', 'password')
     cc.edit_paraphrase_question("21e9689e-c3b2-11e7-8a22-9801a7ae6c69", 'How many years old are you?')
 
 
@@ -548,7 +554,7 @@ question to be deleted::
     from cape.client import CapeClient
 
     cc = CapeClient()
-    cc.login('blo', 'bla')
+    cc.login('username', 'password')
     cc.delete_paraphrase_question("21e9689e-c3b2-11e7-8a22-9801a7ae6c69")
 
 
@@ -561,13 +567,13 @@ can be added with the :meth:`cape.client.CapeClient.add_answer` method::
     from cape.client import CapeClient
 
     cc = CapeClient()
-    cc.login('blo', 'bla')
+    cc.login('username', 'password')
     answer_id = cc.add_answer("68c445cc-c3b2-11e7-8a88-9801a7ae6c69", 'Grey')
     print(answer_id)
 
 This will respond with the ID of the new answer:
 
-    703acab4-c3b2-11e7-b8b1-9801a7ae6c69
+    ``703acab4-c3b2-11e7-b8b1-9801a7ae6c69``
 
 
 Deleting Answers
@@ -578,7 +584,7 @@ To delete an answer call :meth:`cape.client.CapeClient.delete_answer` with the I
     from cape.client import CapeClient
 
     cc = CapeClient()
-    cc.login('blo', 'bla')
+    cc.login('username', 'password')
     cc.delete_answer("703acab4-c3b2-11e7-b8b1-9801a7ae6c69")
 
 Because every saved reply must have at least one answer it's not possible to delete the last remaining answer in a saved
@@ -594,7 +600,7 @@ reply that it belongs to::
     from cape.client import CapeClient
 
     cc = CapeClient()
-    cc.login('blo', 'bla')
+    cc.login('username', 'password')
     cc.edit_canonical_question("f9f1cf90-c3b1-11e7-91a1-9801a7ae6c69", 'What age are you?')
 
 
@@ -651,6 +657,11 @@ This returns a list of inbox items::
         ]
     }
 
+By default this will retrieve 30 inbox items at a time. The *number_of_items* and *offset* parameters can be used to
+control the size of the batches and retrieve multiple batches of inbox items (similar to the mechanism
+described in the :ref:`multiple answers <multiple-answers>` section). The response also includes the *totalItems*
+property which tells us the total number of items available (beyond those retrieved in this specific batch).
+
 Each inbox item in the list has the following properties:
 
 ..  csv-table::
@@ -664,7 +675,7 @@ Each inbox item in the list has the following properties:
     answers     |   A list of :ref:`answer objects <answer-objects>`
     created     |   Timestamp indicating when this question was asked
 
-Inbox items can be searched and filtered, for example to retrieve only inbox items haven't been read but have been
+Inbox items can be searched and filtered, for example to retrieve only inbox items that haven't been read but have been
 answered and contain the word 'API'::
 
     from cape.client import CapeClient
