@@ -405,9 +405,12 @@ answer pair::
     reply_id = cc.create_saved_reply('What colour is the sky?', 'Blue')
     print(reply_id)
 
-This will respond with the ID of the new reply:
+This will respond with a dictionary containing the ID of the new reply and the ID of the new answer::
 
-    ``f9f1cf90-c3b1-11e7-91a1-9801a7ae6c69``
+    {
+        'replyId': 'f9f1cf90-c3b1-11e7-91a1-9801a7ae6c69',
+        'answerId': 'd2780710-c3c3-11e7-8d29-d15d28ee5381'
+    }
 
 Saved replies must have a unique question. If this question already exists then an error is returned.
 

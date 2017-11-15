@@ -24,8 +24,9 @@ def test_saved_replies_offset(cc):
 
 
 def test_create_saved_reply(cc):
-    reply_id = cc.create_saved_reply('What colour is the sky?', 'Blue')
-    assert reply_id is not None
+    response = cc.create_saved_reply('What colour is the sky?', 'Blue')
+    assert 'replyId' in response
+    assert 'answerId' in response
 
 
 def test_delete_saved_reply(cc):

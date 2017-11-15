@@ -201,7 +201,7 @@ class CapeClient:
         """
         r = self._raw_api_call('create-saved-reply', {'question': question,
                                                       'answer': answer})
-        return r.json()['result']['replyId']
+        return r.json()['result']
 
     def delete_saved_reply(self, reply_id):
         """
