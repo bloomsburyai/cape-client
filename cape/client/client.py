@@ -183,10 +183,14 @@ class CapeClient:
         :param offset: The starting point in the list of saved replies, used in conjunction with number_of_tems to retrieve multiple batches of saved replies.
         :return: A list of saved replies in reverse chronological order (newest first)
         """
-        r = self._raw_api_call('get-saved-replies', {'searchTerm': search_term,
-                                                     'savedReplyIds': saved_reply_ids,
-                                                     'numberOfItems': str(number_of_items),
-                                                     'offset': str(offset)})
+        params = {'searchTerm': search_term,
+                  'savedReplyIds': ",".join(saved_reply_ids),
+                  'numberOfItems': str(number_of_items),
+                  'offset': str(offset)}
+        if len(saved_reply_ids) == 0:
+            params.pop('savedReplyIds')
+        r = self._raw_api_call('get-saved-replies', params)
+
         return r.json()['result']
 
     def create_saved_reply(self, question, answer):
