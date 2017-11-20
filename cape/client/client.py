@@ -173,7 +173,7 @@ class CapeClient:
         r = self._raw_api_call('archive-inbox', {'inboxId': str(inbox_id)})
         return r.json()['result']['inboxId']
 
-    def get_saved_replies(self, search_term='', saved_reply_ids=None, number_of_items=30, offset=0):
+    def get_saved_replies(self, search_term='', saved_reply_ids=[], number_of_items=30, offset=0):
         """
         Retrieve a list of saved replies.
 
@@ -184,6 +184,7 @@ class CapeClient:
         :return: A list of saved replies in reverse chronological order (newest first)
         """
         r = self._raw_api_call('get-saved-replies', {'searchTerm': search_term,
+                                                     'savedReplyIds': saved_reply_ids,
                                                      'numberOfItems': str(number_of_items),
                                                      'offset': str(offset)})
         return r.json()['result']
