@@ -173,11 +173,12 @@ class CapeClient:
         r = self._raw_api_call('archive-inbox', {'inboxId': str(inbox_id)})
         return r.json()['result']['inboxId']
 
-    def get_saved_replies(self, search_term='', number_of_items=30, offset=0):
+    def get_saved_replies(self, search_term='', saved_reply_ids=None, number_of_items=30, offset=0):
         """
         Retrieve a list of saved replies.
 
         :param search_term: Filter saved replies based on whether they contain the search term
+        :param saved_reply_ids: List of saved reply IDs to return
         :param number_of_items: The number of saved replies to return
         :param offset: The starting point in the list of saved replies, used in conjunction with number_of_tems to retrieve multiple batches of saved replies.
         :return: A list of saved replies in reverse chronological order (newest first)
