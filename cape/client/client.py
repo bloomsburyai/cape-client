@@ -206,8 +206,12 @@ class CapeClient:
         :param offset: The starting point in the list of saved replies, used in conjunction with number_of_tems to retrieve multiple batches of saved replies.
         :return: A list of saved replies in reverse chronological order (newest first)
         """
+        if saved_reply_ids is not None:
+            assert isinstance(saved_reply_ids, list)
+        else:
+            saved_reply_ids = []
         params = {'searchTerm': search_term,
-                  'savedReplyIds': ",".join(saved_reply_ids),
+                  'savedReplyIds': json.dumps(saved_reply_ids),
                   'numberOfItems': str(number_of_items),
                   'offset': str(offset)}
         if len(saved_reply_ids) == 0:
@@ -329,7 +333,11 @@ class CapeClient:
         :param offset: The starting point in the list of documents, used in conjunction with number_of_items to retrieve multiple batches of documents
         :return: A list of documents in reverse chronological order (newest first)
         """
-        params = {'documentIds': document_ids,
+        if document_ids is not None:
+            assert isinstance(document_ids, list)
+        else:
+            document_ids = []
+        params = {'documentIds': json.dumps(document_ids),
                   'numberOfItems': str(number_of_items),
                   'offset': str(offset)}
         if len(document_ids) == 0:
