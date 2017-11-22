@@ -219,7 +219,7 @@ Creating Documents
 ^^^^^^^^^^^^^^^^^^
 
 There are two ways to create a new document, we can either provide the text contents of a document via the *text*
-parameter of the :meth:`cape.client.CapeClient.upload_document` method or we can upload a file via the *file_path* parameter.
+parameter of the :meth:`cape.client.CapeClient.add_document` method or we can upload a file via the *file_path* parameter.
 
 To create a document using the *text* parameter::
 
@@ -227,11 +227,11 @@ To create a document using the *text* parameter::
 
     cc = CapeClient()
     cc.login('username', 'password')
-    doc_id = cc.upload_document("Document title",
+    doc_id = cc.add_document("Document title",
                                 "Hello and welcome to my document!")
     print(doc_id)
 
-If we don't supply a *document_id* when calling :meth:`cape.client.CapeClient.upload_document` an ID will be
+If we don't supply a *document_id* when calling :meth:`cape.client.CapeClient.add_document` an ID will be
 automatically generated for us. Automatically generated IDs are created by taking the SHA256 hash of the document
 contents. So for this document the following ID will be produced:
 
@@ -248,7 +248,7 @@ Alternatively we can upload a file::
 
     cc = CapeClient()
     cc.login('username', 'password')
-    doc_id = cc.upload_document("Document title",
+    doc_id = cc.add_document("Document title",
                                 file_path="/tmp/example_file.txt",
                                 document_id='my_document_id')
     print(doc_id)
@@ -273,7 +273,7 @@ updates about the upload's progress::
 
     cc = CapeClient()
     cc.login('username', 'password')
-    doc_id = cc.upload_document("Document title",
+    doc_id = cc.add_document("Document title",
                                 file_path="/tmp/large_example.txt",
                                 monitor_callback=upload_cb)
 
@@ -304,14 +304,14 @@ accidental replacement of documents. For example::
     cc.login('username', 'password')
 
     # Create the original document
-    doc_id = cc.upload_document("My document",
-                                "This is a good document.")
+    doc_id = cc.add_document("My document",
+                             "This is a good document.")
 
     # Replace it with an improved version
-    cc.upload_document("My document",
-                       "This is a great document.",
-                       document_id=doc_id,
-                       replace=True)
+    cc.add_document("My document",
+                    "This is a great document.",
+                    document_id=doc_id,
+                    replace=True)
 
 
 Deleting Documents
@@ -395,14 +395,14 @@ same answer (e.g. "How old are you?" vs "What is your age?"). This functionality
 Creating Saved Replies
 ^^^^^^^^^^^^^^^^^^^^^^
 
-To create a new saved reply simply call the :meth:`cape.client.CapeClient.create_saved_reply` method with a question and
+To create a new saved reply simply call the :meth:`cape.client.CapeClient.add_saved_reply` method with a question and
 answer pair::
 
     from cape.client import CapeClient
 
     cc = CapeClient()
     cc.login('username', 'password')
-    reply_id = cc.create_saved_reply('What colour is the sky?', 'Blue')
+    reply_id = cc.add_saved_reply('What colour is the sky?', 'Blue')
     print(reply_id)
 
 This will respond with a dictionary containing the ID of the new reply and the ID of the new answer::
