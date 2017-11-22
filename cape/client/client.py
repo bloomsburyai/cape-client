@@ -123,7 +123,7 @@ class CapeClient:
         params = {'token': token,
                   'question': question,
                   'threshold': threshold,
-                  'documentIds': str(document_ids),
+                  'documentIds': [str(doc_id) for doc_id in document_ids],
                   'sourceType': str(source_type),
                   'speedOrAccuracy': speed_or_accuracy,
                   'numberOfItems': str(number_of_items),

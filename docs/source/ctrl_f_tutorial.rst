@@ -178,7 +178,9 @@ We can then create an endpoint using a logged-in Cape Client::
     @app.route('/add_document', methods=['POST'])
     def add_document():
         doc_text = request.form.get('doc', "") # get the document text from the post request
-        _doc_id = _cape_client.upload_document(title='ctrl_f_doc', text=doc_text, replace=True) # upload the document,
+        _doc_id = _cape_client.upload_document(title='ctrl_f_doc',
+                                               text=doc_text,
+                                               replace=True) # upload the document,
         print(f'uploaded doc with id: {_doc_id}')
         return jsonify({'success': True})
 
@@ -186,6 +188,8 @@ If you're using our boilerplate code, you can find the html for our demo in `tem
 
 Adding The Search Functionality
 -------------------------------
+
+
 
 
 
