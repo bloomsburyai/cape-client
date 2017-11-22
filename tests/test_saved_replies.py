@@ -23,8 +23,8 @@ def test_saved_replies_offset(cc):
     assert item1 != item2
 
 
-def test_create_saved_reply(cc):
-    response = cc.create_saved_reply('What colour is the sky?', 'Blue')
+def test_add_saved_reply(cc):
+    response = cc.add_saved_reply('What colour is the sky?', 'Blue')
     assert 'replyId' in response
     assert 'answerId' in response
 

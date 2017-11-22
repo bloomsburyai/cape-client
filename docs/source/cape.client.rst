@@ -13,3 +13,4 @@ Module contents
 
 .. autoclass:: cape.client.CapeClient
    :members:
+   :exclude-members: upload-document

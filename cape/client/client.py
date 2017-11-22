@@ -1,8 +1,8 @@
 import os.path
+import json
 from requests import Session
 from requests_toolbelt.multipart import encoder
 from .exceptions import CapeException
-import json
 
 API_VERSION = 0.1
 
@@ -58,7 +58,7 @@ class CapeClient:
         :param password: The password to log in with
         :return:
         """
-        r = self._raw_api_call('login', {'login': login, 'password': password})
+        r = self._raw_api_call('user/login', {'login': login, 'password': password})
         self.session_cookie = r.cookies['session']
 
     def logged_in(self):
@@ -75,7 +75,7 @@ class CapeClient:
 
         :return:
         """
-        self._raw_api_call('logout')
+        self._raw_api_call('user/logout')
         self.session_cookie = False
 
     def get_admin_token(self):
@@ -84,7 +84,7 @@ class CapeClient:
 
         :return: An admin token
         """
-        r = self._raw_api_call('get-admin-token')
+        r = self._raw_api_call('user/get-admin-token')
         return r.json()['result']['adminToken']
 
     def get_user_token(self):
@@ -93,7 +93,7 @@ class CapeClient:
 
         :return: A user token
         """
-        r = self._raw_api_call('get-user-token')
+        r = self._raw_api_call('user/get-user-token')
         return r.json()['result']['userToken']
 
     def get_profile(self):
@@ -102,8 +102,27 @@ class CapeClient:
 
         :return: A dictionary containing the user's profile
         """
-        r = self._raw_api_call('get-profile')
+        r = self._raw_api_call('user/get-profile')
         return r.json()['result']
+
+    def get_default_threshold(self):
+        """
+        Retrieve the default threshold used if one isn't explicitly specified when calling answer()
+
+        :return: The current default threshold (either 'verylow', 'low', 'medium', 'high' or 'veryhigh')
+        """
+        r = self._raw_api_call('user/get-default-threshold')
+        return r.json()['result']['threshold']
+
+    def set_default_threshold(self, threshold):
+        """
+        Set the default threshold used if one isn't explicitly specified when calling answer()
+
+        :param threshold: The new default threshold to set, must be either 'verylow', 'low', 'medium', 'high' or 'veryhigh'
+        :return: The new default threshold that's just been set
+        """
+        r = self._raw_api_call('user/set-default-threshold', {'threshold': threshold})
+        return r.json()['result']['threshold']
 
     def answer(self, question, token, threshold=None, document_ids=[],
                source_type='all', speed_or_accuracy='balanced', number_of_items=1, offset=0):
@@ -146,11 +165,11 @@ class CapeClient:
         :param offset: The starting point in the list of inbox items, used in conjunction with number_of_tems to retrieve multiple batches of inbox items.
         :return: A list of inbox items in reverse chronological order (newest first)
         """
-        r = self._raw_api_call('get-inbox', {'read': str(read),
-                                             'answered': str(answered),
-                                             'searchTerm': search_term,
-                                             'numberOfItems': str(number_of_items),
-                                             'offset': str(offset)})
+        r = self._raw_api_call('inbox/get-inbox', {'read': str(read),
+                                                   'answered': str(answered),
+                                                   'searchTerm': search_term,
+                                                   'numberOfItems': str(number_of_items),
+                                                   'offset': str(offset)})
         return r.json()['result']
 
     def mark_inbox_read(self, inbox_id):
@@ -160,7 +179,7 @@ class CapeClient:
         :param inbox_id: The inbox item to mark as being read
         :return: The ID of the inbox item that was marked as read
         """
-        r = self._raw_api_call('mark-inbox-read', {'inboxId': str(inbox_id)})
+        r = self._raw_api_call('inbox/mark-inbox-read', {'inboxId': str(inbox_id)})
         return r.json()['result']['inboxId']
 
     def archive_inbox(self, inbox_id):
@@ -170,7 +189,7 @@ class CapeClient:
         :param inbox_id: The inbox item to archive
         :return: The ID of the inbox item that was archived
         """
-        r = self._raw_api_call('archive-inbox', {'inboxId': str(inbox_id)})
+        r = self._raw_api_call('inbox/archive-inbox', {'inboxId': str(inbox_id)})
         return r.json()['result']['inboxId']
 
     def get_saved_replies(self, search_term='', saved_reply_ids=[], number_of_items=30, offset=0):
@@ -189,11 +208,14 @@ class CapeClient:
                   'offset': str(offset)}
         if len(saved_reply_ids) == 0:
             params.pop('savedReplyIds')
-        r = self._raw_api_call('get-saved-replies', params)
+        r = self._raw_api_call('saved-replies/get-saved-replies', params)
 
         return r.json()['result']
 
     def create_saved_reply(self, question, answer):
+        return self.add_saved_reply(question, answer)
+
+    def add_saved_reply(self, question, answer):
         """
         Create a new saved reply.
 
@@ -205,8 +227,8 @@ class CapeClient:
         :param answer: The answer to reply with when the question is asked
         :return: The ID of the new saved reply
         """
-        r = self._raw_api_call('create-saved-reply', {'question': question,
-                                                      'answer': answer})
+        r = self._raw_api_call('saved-replies/add-saved-reply', {'question': question,
+                                                                 'answer': answer})
         return r.json()['result']
 
     def delete_saved_reply(self, reply_id):
@@ -216,7 +238,7 @@ class CapeClient:
         :param reply_id: The ID of the saved reply to delete
         :return: The ID of the saved reply that was deleted
         """
-        r = self._raw_api_call('delete-saved-reply', {'replyId': str(reply_id)})
+        r = self._raw_api_call('saved-replies/delete-saved-reply', {'replyId': str(reply_id)})
         return r.json()['result']['replyId']
 
     def add_paraphrase_question(self, reply_id, question):
@@ -227,7 +249,7 @@ class CapeClient:
         :param question: The new paraphrase of this saved reply's canonical question
         :return: The ID of the new question
         """
-        r = self._raw_api_call('add-paraphrase-question', {'replyId': str(reply_id), 'question': question})
+        r = self._raw_api_call('saved-replies/add-paraphrase-question', {'replyId': str(reply_id), 'question': question})
         return r.json()['result']['questionId']
 
     def edit_paraphrase_question(self, question_id, question):
@@ -238,7 +260,7 @@ class CapeClient:
         :param question: The modified question text
         :return: The ID of the question that was modified
         """
-        r = self._raw_api_call('edit-paraphrase-question', {'questionId': str(question_id), 'question': question})
+        r = self._raw_api_call('saved-replies/edit-paraphrase-question', {'questionId': str(question_id), 'question': question})
         return r.json()['result']['questionId']
 
     def edit_canonical_question(self, reply_id, question):
@@ -249,7 +271,7 @@ class CapeClient:
         :param question: The modified question text
         :return: The ID of the saved reply that was modified
         """
-        r = self._raw_api_call('edit-canonical-question', {'replyId': str(reply_id), 'question': question})
+        r = self._raw_api_call('saved-replies/edit-canonical-question', {'replyId': str(reply_id), 'question': question})
         return r.json()['result']['replyId']
 
     def delete_paraphrase_question(self, question_id):
@@ -259,7 +281,7 @@ class CapeClient:
         :param question_id: The ID of the paraphrase question to delete
         :return: The ID of the paraphrase question that was deleted
         """
-        r = self._raw_api_call('delete-paraphrase-question', {'questionId': str(question_id)})
+        r = self._raw_api_call('saved-replies/delete-paraphrase-question', {'questionId': str(question_id)})
         return r.json()['result']['questionId']
 
     def add_answer(self, reply_id, answer):
@@ -270,7 +292,7 @@ class CapeClient:
         :param answer: A new answer to add to the saved reply
         :return: The ID of the newly created answer
         """
-        r = self._raw_api_call('add-answer', {'replyId': str(reply_id), 'answer': answer})
+        r = self._raw_api_call('saved-replies/add-answer', {'replyId': str(reply_id), 'answer': answer})
         return r.json()['result']['answerId']
 
     def edit_answer(self, answer_id, answer):
@@ -281,7 +303,7 @@ class CapeClient:
         :param answer: The modified answer text
         :return: The ID of the answer that was modified
         """
-        r = self._raw_api_call('edit-answer', {'answerId': str(answer_id), 'answer': answer})
+        r = self._raw_api_call('saved-replies/edit-answer', {'answerId': str(answer_id), 'answer': answer})
         return r.json()['result']['answerId']
 
     def delete_answer(self, answer_id):
@@ -291,7 +313,7 @@ class CapeClient:
         :param answer_id: The ID of the answer to delete
         :return: The ID of the answer that was deleted
         """
-        r = self._raw_api_call('delete-answer', {'answerId': str(answer_id)})
+        r = self._raw_api_call('saved-replies/delete-answer', {'answerId': str(answer_id)})
         return r.json()['result']['answerId']
 
     def get_documents(self, document_ids=[], number_of_items=30, offset=0):
@@ -308,11 +330,15 @@ class CapeClient:
                   'offset': str(offset)}
         if len(document_ids) == 0:
             params.pop('documentIds')
-        r = self._raw_api_call('get-documents', params)
+        r = self._raw_api_call('documents/get-documents', params)
         return r.json()['result']
 
     def upload_document(self, title, text=None, file_path=None, document_id='', origin='', replace=False,
                         document_type=None, monitor_callback=None):
+        return self.add_document(title, text, file_path, document_id, origin, replace, document_type, monitor_callback)
+
+    def add_document(self, title, text=None, file_path=None, document_id='', origin='', replace=False,
+                     document_type=None, monitor_callback=None):
         """
         Create a new document or replace an existing document.
 
@@ -329,21 +355,21 @@ class CapeClient:
         if text is not None:
             if document_type is None:
                 document_type = 'text'
-            r = self._raw_api_call('upload-document', {'title': title,
-                                                       'text': text,
-                                                       'documentId': document_id,
-                                                       'origin': origin,
-                                                       'replace': str(replace)}, monitor_callback=monitor_callback)
+            r = self._raw_api_call('documents/add-document', {'title': title,
+                                                              'text': text,
+                                                              'documentId': document_id,
+                                                              'origin': origin,
+                                                              'replace': str(replace)}, monitor_callback=monitor_callback)
         elif file_path is not None:
             if document_type is None:
                 document_type = 'file'
             directory, file_name = os.path.split(file_path)
             fh = open(file_path, 'rb')
-            r = self._raw_api_call('upload-document', {'title': title,
-                                                       'text': fh,
-                                                       'documentId': document_id,
-                                                       'origin': origin,
-                                                       'replace': str(replace)}, monitor_callback=monitor_callback)
+            r = self._raw_api_call('documents/add-document', {'title': title,
+                                                              'text': fh,
+                                                              'documentId': document_id,
+                                                              'origin': origin,
+                                                              'replace': str(replace)}, monitor_callback=monitor_callback)
             fh.close()
         else:
             raise CapeException("Either the 'text' or the 'file_path' parameter are required for document uploads.")
@@ -355,24 +381,5 @@ class CapeClient:
         :param document_id: The ID of the document to delete
         :return: The ID of the document that was deleted
         """
-        r = self._raw_api_call('delete-document', {'documentId': document_id})
+        r = self._raw_api_call('documents/delete-document', {'documentId': document_id})
         return r.json()['result']['documentId']
-
-    def get_default_threshold(self):
-        """
-        Retrieve the default threshold used if one isn't explicitly specified when calling answer()
-
-        :return: The current default threshold (either 'verylow', 'low', 'medium', 'high' or 'veryhigh')
-        """
-        r = self._raw_api_call('get-default-threshold')
-        return r.json()['result']['threshold']
-
-    def set_default_threshold(self, threshold):
-        """
-        Set the default threshold used if one isn't explicitly specified when calling answer()
-
-        :param threshold: The new default threshold to set, must be either 'verylow', 'low', 'medium', 'high' or 'veryhigh'
-        :return: The new default threshold that's just been set
-        """
-        r = self._raw_api_call('set-default-threshold', {'threshold': threshold})
-        return r.json()['result']['threshold']
