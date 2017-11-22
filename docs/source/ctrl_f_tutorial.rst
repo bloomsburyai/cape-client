@@ -101,6 +101,7 @@ access to your AI. The following code retrieves your user token so we can query 
     user_token = cape_client.get_user_token
     print(user_token)
     08aerv08ajkdp
+
 Adding The Document You Want To Search
 --------------------------------------
 
@@ -140,13 +141,13 @@ away. ::
 
     doc_id = cape_client.upload_document("Football Document", WIKIPEDIA_TEXT)
     # you can ask a question to a specific document by referencing the document id
-    answers = cc.answer('What is football?',
-                        user_token,
-                        document_ids = ['Football Document'],
-                        source_type = 'document',
+    answers = cc.answer(query='What is football?',
+                        token=user_token,
+                        document_ids=['Football Document'],
+                        source_type='document',
                         number_of_items=1)
     print(answers)
-    # ['Football is a family of team sports']
+    # [{'text':'Football is a family of team sports',...},...]
 
 Combining The Upload Document Method With Our Demo App
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -188,6 +189,117 @@ If you're using our boilerplate code, you can find the html for our demo in `tem
 
 Adding The Search Functionality
 -------------------------------
+
+On to the exciting bit! Now we'll go over how we can add the search functionality to our website.
+
+The Answer Method & Object
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Once you've uploaded your documents, getting a response back is as simple as calling one method - :meth:cape.client.CapeClient.answer.
+We've got an example below, which we'll discuss in more detail before jumping in to implementing the demo.::
+
+    answers = cape_client.answer(query='What is football?',
+                                 token=ANSWER_TOKEN,
+                                 document_ids=[FOOTBALL_DOCUMENT_ID],
+                                 source_type='document',
+                                 number_of_items=5)
+    print(answers)
+    #  [{'text':'Football is a family of team sports',...}, ..., ... ]
+
+Now let's go through each of these parameters in detail.
+
+`query` is the string of the question you want answered.
+
+`token` is your **Answer Token** (not your Admin Token!).
+
+`document_ids` is an optional argument. It's a list of document IDs you want read when trying to find the answer to
+your question. If you don't know, or don't care, which document your answer comes from you can set this to `None`.
+
+`source_type` is another optional argument. We don't go into it here, but there are two ways you can answer questions
+with Cape API - the first is by reading documents, but occassionally the right answer isn't found. Using something called
+a **Saved Reply** you can manually override our reading AI. Since we aren't interested in this behaviour for this tutorial
+we are going to explicitly set this parameter to `document` which means 'only get answers by reading documents'.
+
+`number_of_items` is the number of answers you want returned. Our reading AI will try to find this number of answers in
+the documents, and will return a sorted list of all those it thinks are good enough.
+
+And what is returned? A list of 'Answers', where each answer is a python dictionary containing lots of useful information.
+A sample Answer will look something like this::
+
+    {
+     'text': 'This is the answer text',
+     'confidence': 0.88,
+     'sourceType': 'document',
+     'sourceId': '8dce9e4841fc944b120f7c5a31ea4dd73bfe41258206af37d5d43a2c74ab27c9',
+     'startOffset': 0,
+     'endOffset': 100
+     }
+
+Again, let's go through these attributes in turn to make sure we understand what's going on.
+
+`text` is the raw string that the AI thinks is the answer to your query.
+
+`confidence` is a float between 0 and 1 that represents how confident the AI is with this answer. This is primarily for
+comparison purposes (i.e. you can compare different answers) - it shouldn't viewed as a probability (in the sense that
+0.8 does not mean the model is right 8 times out of 10 when this confidence is present).
+
+`sourceType` tells you what type of object contained the answer. In this tutorial the `sourceType` will always be 'document'.
+
+`sourceId` is the ID of the document that contained the answer.
+
+`startOffset` is the location in the document that corresponds to the first character of `text`.
+
+`endOffset` is the location in the document that corresponds to the last character of `text`.
+
+Integrating The Answer Method Into Our Ctrl+F Demo
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Ok, so now we've introduction the answer method, let's integrate it into our demo. First, let's start with the html.
+In our boilerplate code, we have the following input element::
+
+    <input type="search" class="form-control mb-3" id="ctrlfField" placeholder="ctrl+f search bar"/>
+
+For which we have the following jquery.::
+
+    $('#ctrlfField').bind('input propertychange', function (e) {
+        e.preventDefault();
+        if (typeof(myTimeout) !== "undefined") {
+            clearTimeout(myTimeout);
+        }
+        myTimeout = setTimeout(function () {
+            $.get('/ctrl_f', {'query': $('#ctrlfField').val()}, function (data) {
+                var answers = data.answers;
+                var answer = {};
+                var range = [];
+                for (i = 0; i < answers.length; i++) {
+                    answer = answers[i];
+                    range = {'start': answer.startOffset, 'length': (answer.endOffset - answer.startOffset)};
+                    if (i === 0) {
+                        $('#documentText').markRanges([range], {element: 'span', className: 'success'})
+                    } else if (i < 4) {
+                        $('#documentText').markRanges([range], {element: 'span', className: 'info'})
+                    } else {
+                        $('#documentText').markRanges([range], {element: 'span', className: 'danger'})
+                    }
+                }
+            });
+        }, 1000);
+        return false;
+    });
+
+In the above, I've added a few additional bits of logic to make the user experience better.
+First, I've added a timeout to only send the request once the user has stopped typing for one second. Second, I've assigned
+different classes to different answers based on index to indicate the answer the AI is more or less confident about.
+
+
+
+
+
+
+
+
+
+
 
 
 
