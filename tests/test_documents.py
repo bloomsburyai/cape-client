@@ -20,6 +20,11 @@ def test_get_documents_number_of_items(cc):
     assert len(documents['items']) == 2
 
 
+def test_get_documents_ids(cc):
+    documents = cc.get_documents(document_ids=["358e1b77c9bcc353946dfe107d6b32ff"])
+    assert len(documents['items']) == 1
+
+
 def test_text_upload(cc):
     document_id = cc.add_document("Cape API Documentation", document_text, origin='cape_api.txt')
     assert document_id == hashlib.sha256(document_text.encode('utf-8')).hexdigest()

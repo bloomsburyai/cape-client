@@ -10,6 +10,11 @@ def test_saved_replies(cc):
     assert 'items' in saved_replies
 
 
+def test_saved_replies_ids(cc):
+    saved_replies = cc.get_saved_replies(saved_reply_ids=["d27b6282-c3c3-11e7-8d29-d15d28ee5381"])
+    assert len(saved_replies['items']) == 1
+
+
 def test_saved_replies_number_of_items(cc):
     saved_replies = cc.get_saved_replies(number_of_items=1)
     assert len(saved_replies['items']) == 1
