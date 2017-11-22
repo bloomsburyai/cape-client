@@ -124,7 +124,7 @@ class CapeClient:
         r = self._raw_api_call('user/set-default-threshold', {'threshold': threshold})
         return r.json()['result']['threshold']
 
-    def answer(self, question, token, threshold=None, document_ids=[],
+    def answer(self, question, token, threshold=None, document_ids=None,
                source_type='all', speed_or_accuracy='balanced', number_of_items=1, offset=0):
         """
         Provide a list of answers to a given question.
@@ -139,10 +139,14 @@ class CapeClient:
         :param offset: The starting point in the list of answers, used in conjunction with number_of_items to retrieve multiple batches of answers.
         :return: A list of answers
         """
+        if document_ids is not None:
+            assert isinstance(document_ids, list)
+        else:
+            document_ids = []
         params = {'token': token,
                   'question': question,
                   'threshold': threshold,
-                  'documentIds': str(document_ids),
+                  'documentIds': json.dumps(document_ids),
                   'sourceType': str(source_type),
                   'speedOrAccuracy': speed_or_accuracy,
                   'numberOfItems': str(number_of_items),

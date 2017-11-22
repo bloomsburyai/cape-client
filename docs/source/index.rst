@@ -19,6 +19,7 @@ that answers questions about the contents of documents. For example, you can use
     :caption: Contents:
 
     examples
+    ctrl_f_tutorial
 
 *   :ref:`API Documentation <api-docs>`
 *   :ref:`genindex`
