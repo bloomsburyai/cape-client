@@ -440,49 +440,62 @@ Our html file, `templates/index.html` is also very basic::
 Our javascript is only a few lines long::
 
     $(document).ready(function () {
-    var myTimeout = null;
-    $('#documentText').bind('input propertychange', function () {
-        $.post('/add_document', {'doc': $(this).text()});
-    });
-    $('#ctrlfField').bind('input propertychange', function (e) {
-        e.preventDefault();
-        if (typeof(myTimeout) !== "undefined") {
-            clearTimeout(myTimeout);
-        }
-        myTimeout = setTimeout(function () {
-            $.get('/ctrl_f', {'query': $('#ctrlfField').val()}, function (data) {
-                var answers = data.answers;
-                var answer = {};
-                var range = [];
-                for (i = 0; i < answers.length; i++) {
-                    answer = answers[i];
-                    range = {'start': answer.startOffset, 'length': (answer.endOffset - answer.startOffset)};
-                    if (i === 0) {
-                        $('#documentText').markRanges([range], {element: 'span', className: 'success'})
-                    } else if (i < 4) {
-                        $('#documentText').markRanges([range], {element: 'span', className: 'info'})
-                    } else {
-                        $('#documentText').markRanges([range], {element: 'span', className: 'danger'})
+        var myTimeout = null;
+        $('#documentText').bind('input propertychange', function () {
+            $.post('/add_document', {'doc': $(this).text()});
+        });
+        $('#ctrlfField').bind('input propertychange', function (e) {
+            e.preventDefault();
+            $(this).addClass('loading');
+            if (typeof(myTimeout) !== "undefined") {
+                clearTimeout(myTimeout);
+            }
+            myTimeout = setTimeout(function () {
+                $.get('/ctrl_f', {'query': $('#ctrlfField').val()}, function (data) {
+                        var answers = data.answers;
+                        var answer = {};
+                        var range = [];
+                        var doc_text = $('#documentText');
+                        doc_text.unmark();
+                        for (i = 0; i < answers.length; i++) {
+                            answer = answers[i];
+                            range = {'start': answer.startOffset, 'length': (answer.endOffset - answer.startOffset)};
+                            if (i === 0) {
+                                doc_text.markRanges([range], {element: 'span', className: 'success'})
+                            } else if (i < 4) {
+                                doc_text.markRanges([range], {element: 'span', className: 'info'})
+                            } else {
+                                doc_text.markRanges([range], {element: 'span', className: 'danger'})
+                            }
+                        }
+                        $('#ctrlfField').removeClass('loading');
                     }
-                }
-            });
-        }, 1000);
-        return false;
-    });
+                );
+            }, 1000);
+            return false;
+        });
     });
 
 And our stylesheet even shorter::
 
     .success {
-    background: rgba(23, 162, 184, 0.5);
+        background: #86f3a0;
     }
 
     .info {
-        background: rgba(23, 162, 184, 0.2);
+        background: rgba(23, 162, 184, 0.15);
     }
 
     .danger {
-        background: rgba(23, 162, 184, 0.1);
+        background: rgba(23, 162, 184, 0.05);
+    }
+
+    .loading {
+        background-color: #ffffff;
+        background-image: url("http://loadinggif.com/images/image-selection/3.gif");
+        background-size: 25px 25px;
+        background-position:right center;
+        background-repeat: no-repeat;
     }
 
 We can now run the whole thing by typing ``python3 app.py`` in the root of the directory and you are done!
