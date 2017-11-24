@@ -418,8 +418,10 @@ Our html file, `templates/index.html` is also very basic::
 Our JavaScript is only a few lines long::
 
     $(document).ready(function () {
+        var doc_text_selector = $('#documentText');
+        $.post('/add_document', {'doc': doc_text_selector.text()}); // initialise doc
         var myTimeout = null;
-        $('#documentText').bind('input propertychange', function () {
+        doc_text_selector.bind('input propertychange', function () {
             $.post('/add_document', {'doc': $(this).text()});
         });
         $('#ctrlfField').bind('input propertychange', function (e) {
@@ -453,7 +455,6 @@ Our JavaScript is only a few lines long::
             return false;
         });
     });
-
 And our stylesheet even shorter::
 
     .success {
