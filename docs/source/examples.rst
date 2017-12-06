@@ -76,12 +76,15 @@ This will output the following answer list::
 
     [
         {
-            'text': "Hopefully it's pretty easy",
+            'answerText': "Hopefully it's pretty easy",
+            'answerContext: "did very good work. Sam was born in 1974 on the sunny island of",
             'confidence': 0.75,
             'sourceType': 'document',
             'sourceId': '358e1b77c9bcc353946dfe107d6b32ff',
-            'startOffset': 30,
-            'endOffset': 56
+            'answerTextStartOffset': 30,
+            'answerTextEndOffset': 56,
+            'answerContextStartOffset':17,
+            'answerContextEndOffset':98
         }
     ]
 
@@ -96,12 +99,15 @@ Each answer in the list contains the following properties:
     :header: "Property", "Description"
     :delim: |
 
-    text        |   The proposed answer to the question
-    confidence  |   How confident the AI is that this is the correct answer
-    sourceType  |   Whether this result came from a 'document'\ or a 'saved_reply'
-    sourceId    |   The ID of the document or saved reply this answer was found in (depending on sourceType)
-    startOffset |   The starting position of this answer in the document (if sourceType is 'document')
-    endOffset   |   The end position of this answer in the document (if sourceType is 'document')
+    answerText                |   The proposed answer to the question
+    answerContext             |   The context surrounding the proposed answer to the question
+    confidence                |   How confident the AI is that this is the correct answer
+    sourceType                |   Whether this result came from a 'document'\ or a 'saved_reply'
+    sourceId                  |   The ID of the document or saved reply this answer was found in (depending on sourceType)
+    answerTextStartOffset     |   The starting position of this answer in the document (if sourceType is 'document')
+    answerTextEndOffset       |   The end position of this answer in the document (if sourceType is 'document')
+    answerContextStartOffset  |   The starting position of this answer context in the document (if sourceType is 'document')
+    answerContextEndOffset    |   The end position of this answer context in the document (if sourceType is 'document')
 
 
 ..  _multiple-answers:
@@ -127,45 +133,60 @@ Which will produce output like::
 
     [
         {
-            'text': "Sam was born in 1974",
-            'confidence': 0.74,
+            'answerText': "Sam was born in 1974",
+            'answerContext: "did very good work. Sam was born in 1974 on the sunny island of",
+            'confidence': 0.75,
             'sourceType': 'document',
             'sourceId': 'employee_info.txt',
-            'startOffset': 20,
-            'endOffset': 40
+            'answerTextStartOffset': 80,
+            'answerTextEndOffset': 100,
+            'answerContextStartOffset':40,
+            'answerContextEndOffset':123
         },
         {
-            'text': "James was born in 1982",
-            'confidence': 0.73,
+            'answerText': "James was born in 1982",
+            'answerContext: "James was born in 1982 on the sunny island of",
+            'confidence': 0.64,
             'sourceType': 'document',
             'sourceId': 'employee_info.txt',
-            'startOffset': 120,
-            'endOffset': 142
+            'answerTextStartOffset': 0,
+            'answerTextEndOffset': 22,
+            'answerContextStartOffset':0,
+            'answerContextEndOffset':45
         },
         {
-            'text': "Alice was born in 1973",
-            'confidence': 0.71,
+            'answerText': "Alice was born in 1973",
+            'answerContext: "did very good work. Alice was born in 1973 on the sunny island of",
+            'confidence': 0.61,
             'sourceType': 'document',
             'sourceId': 'employee_info.txt',
-            'startOffset': 255,
-            'endOffset': 277
+            'answerTextStartOffset': 220,
+            'answerTextEndOffset': 242,
+            'answerContextStartOffset':200,
+            'answerContextEndOffset':265
         },
         {
-            'text': "Bob was born in 1965",
-            'confidence': 0.71,
+            'answerText': "Bob was born in 1965",
+            'answerContext: "did very good work. Bob was born in 1965 on the sunny island of",
+            'confidence': 0.59,
             'sourceType': 'document',
             'sourceId': 'employee_info.txt',
-            'startOffset': 310,
-            'endOffset': 330
+            'answerTextStartOffset': 180,
+            'answerTextEndOffset': 200,
+            'answerContextStartOffset':140,
+            'answerContextEndOffset':223
         },
         {
-            'text': "Jill was born in 1986",
-            'confidence': 0.70,
+            'answerText': "Jill was born in 1986",
+            'answerContext: "did very good work. Jill was born in 1986 on the sunny island of",
+            'confidence': 0.57,
             'sourceType': 'document',
             'sourceId': 'employee_info.txt',
-            'startOffset': 415,
-            'endOffset': 436
-        },
+            'answerTextStartOffset': 480,
+            'answerTextEndOffset': 501,
+            'answerContextStartOffset':440,
+            'answerContextEndOffset':524
+        }
     ]
 
 If we then wished to retrieve the next 5 answers we could run::
@@ -625,7 +646,7 @@ To retrieve inbox items call the :meth:`cape.client.CapeClient.get_inbox` method
     inbox = cc.get_inbox()
     print(inbox)
 
-This returns a list of inbox items::
+This returns a list of inbox items:
 
     {
         'totalItems': 2,
@@ -648,12 +669,15 @@ This returns a list of inbox items::
                 'created': 1508161834,
                 'answers': [
                     {
-                        'text': "Hopefully it's pretty easy",
+                        'answerText': "Hopefully it's pretty easy",
+                        'answerContext: "did very good work. Sam was born in 1974 on the sunny island of",
                         'confidence': 0.75,
                         'sourceType': 'document',
                         'sourceId': '358e1b77c9bcc353946dfe107d6b32ff',
-                        'startOffset': 30,
-                        'endOffset': 56
+                        'answerTextStartOffset': 30,
+                        'answerTextEndOffset': 56,
+                        'answerContextStartOffset':17,
+                        'answerContextEndOffset':98
                     }
                 ]
             }
