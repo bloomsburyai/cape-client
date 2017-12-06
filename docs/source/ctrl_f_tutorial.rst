@@ -227,17 +227,20 @@ And what is an **Answer** object? Each **Answer** is a Python dictionary contain
 A sample Answer will look something like this::
 
     {
-         'text': 'This is the answer text',
+         'answerText': 'This is the answer text',
+         'answerContext': 'context for This is the answer text',
          'confidence': 0.88,
          'sourceType': 'document',
          'sourceId': '8dce9e4841fc944b120f7c5a31ea4dd73bfe41258206af37d5d43a2c74ab27c9',
-         'startOffset': 0,
-         'endOffset': 100
+         'answerTextStartOffset': 10,
+         'answerTextEndOffset': 100,
+         'answerContextStartOffset': 0,
+         'answerContextEndOffset': 120,
     }
 
 Again, let's go through these attributes in turn to make sure we understand what's going on.
 
-``text`` is the raw string that the AI thinks is the answer to your query.
+``answerText`` is the raw string that the AI thinks is the answer to your query.
 
 ``confidence`` is a float between 0 and 1 that represents how confident the AI is with this answer.
 
@@ -245,9 +248,13 @@ Again, let's go through these attributes in turn to make sure we understand what
 
 ``sourceId`` is the ID of the document that contained the answer.
 
-``startOffset`` is the location in the document that corresponds to the first character of ``text``.
+``answerTextStartOffset`` is the location in the document that corresponds to the first character of ``answerText``.
 
-``endOffset`` is the location in the document that corresponds to the last character of ``text``.
+``answerTextEndOffset`` is the location in the document that corresponds to the last character of ``answerText``.
+
+``answerContextStartOffset`` is the location in the document that corresponds to the first character of ``answerContext``.
+
+``answerContextEndOffset`` is the location in the document that corresponds to the last character of ``answerContext``.
 
 Integrating The Answer Method Into Our Ctrl+F
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -271,7 +278,7 @@ For which we have the following jQuery::
                 var range = [];
                 for (i = 0; i < answers.length; i++) {
                     answer = answers[i];
-                    range = {'start': answer.startOffset, 'length': (answer.endOffset - answer.startOffset)};
+                    range = {'start': answer.startTextOffset, 'length': (answer.endTextOffset - answer.startTextOffset)};
                     if (i === 0) {
                         $('#documentText').markRanges([range], {element: 'span', className: 'success'})
                     } else if (i < 4) {
@@ -439,7 +446,7 @@ Our JavaScript is only a few lines long::
                         doc_text.unmark();
                         for (i = 0; i < answers.length; i++) {
                             answer = answers[i];
-                            range = {'start': answer.startOffset, 'length': (answer.endOffset - answer.startOffset)};
+                            range = {'start': answer.startTextOffset, 'length': (answer.endTextOffset - answer.startTextOffset)};
                             if (i === 0) {
                                 doc_text.markRanges([range], {element: 'span', className: 'success'})
                             } else if (i < 4) {
