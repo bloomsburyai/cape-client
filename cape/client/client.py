@@ -22,6 +22,7 @@ class CapeClient:
         self.session = Session()
         self.session_cookie = False
         self.admin_token = admin_token
+        self.user_token = None
 
     def _raw_api_call(self, method, parameters={}, monitor_callback=None):
         url = "%s/%s" % (self.api_base, method)
@@ -67,7 +68,7 @@ class CapeClient:
 
         :return: Whether we're logged in or not
         """
-        return self.session_cookie != False
+        return self.session_cookie != False or self.admin_token != None
 
     def logout(self):
         """
@@ -77,6 +78,7 @@ class CapeClient:
         """
         self._raw_api_call('user/logout')
         self.session_cookie = False
+        self.user_token = None
 
     def get_admin_token(self):
         """
@@ -124,13 +126,13 @@ class CapeClient:
         r = self._raw_api_call('user/set-default-threshold', {'threshold': threshold})
         return r.json()['result']['threshold']
 
-    def answer(self, question, token, threshold=None, document_ids=None,
+    def answer(self, question, token=None, threshold=None, document_ids=None,
                source_type='all', speed_or_accuracy='balanced', number_of_items=1, offset=0):
         """
         Provide a list of answers to a given question.
 
         :param question: The question to ask
-        :param token: A token retrieved from get_user_token
+        :param token: A token retrieved from get_user_token (Default: the token for the currently authenticated user)
         :param threshold: The minimum confidence of answers to return ('verylow'/'low'/'medium'/'medium'/'veryhigh')
         :param document_ids: A list of documents to search for answers (Default: all documents)
         :param source_type: Whether to search documents, saved replies or all ('document'/'saved_reply'/'all')
@@ -139,6 +141,14 @@ class CapeClient:
         :param offset: The starting point in the list of answers, used in conjunction with number_of_items to retrieve multiple batches of answers.
         :return: A list of answers
         """
+        if token is None:
+            if self.user_token is None:
+                if self.logged_in():
+                    self.user_token = self.get_user_token()
+                else:
+                    raise CapeException('A user token must be specified to retrieve an answer')
+            token = self.user_token
+
         if document_ids is not None:
             if not isinstance(document_ids, list):
                 raise TypeError(f'Expecting document ids to be of type list, instead got {type(document_ids)}')
