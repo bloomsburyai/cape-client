@@ -140,7 +140,8 @@ class CapeClient:
         :return: A list of answers
         """
         if document_ids is not None:
-            assert isinstance(document_ids, list)
+            if not isinstance(document_ids, list):
+                raise ValueError(f'Expecting document ids to be of type list, instead got {document_ids}')
         else:
             document_ids = []
         params = {'token': token,
