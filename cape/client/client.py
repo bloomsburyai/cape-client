@@ -141,14 +141,6 @@ class CapeClient:
         :param offset: The starting point in the list of answers, used in conjunction with number_of_items to retrieve multiple batches of answers.
         :return: A list of answers
         """
-        if token is None:
-            if self.user_token is None:
-                if self.logged_in():
-                    self.user_token = self.get_user_token()
-                else:
-                    raise CapeException('A user token must be specified to retrieve an answer')
-            token = self.user_token
-
         if document_ids is not None:
             if not isinstance(document_ids, list):
                 raise TypeError(f'Expecting document ids to be of type list, instead got {type(document_ids)}')
@@ -162,6 +154,10 @@ class CapeClient:
                   'speedOrAccuracy': speed_or_accuracy,
                   'numberOfItems': str(number_of_items),
                   'offset': str(offset)}
+        if token is None:
+            params.pop('token')
+            if not self.logged_in():
+                raise CapeException("A user token must be supplied if the client isn't logged in.")
         if len(document_ids) == 0:
             params.pop('documentIds')
         if threshold is None:
