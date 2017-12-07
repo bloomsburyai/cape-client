@@ -141,7 +141,7 @@ class CapeClient:
         """
         if document_ids is not None:
             if not isinstance(document_ids, list):
-                raise ValueError(f'Expecting document ids to be of type list, instead got {str(document_ids)}')
+                raise TypeError(f'Expecting document ids to be of type list, instead got {type(document_ids)}')
         else:
             document_ids = []
         params = {'token': token,
