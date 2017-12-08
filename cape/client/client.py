@@ -3,6 +3,7 @@ import json
 from requests import Session
 from requests_toolbelt.multipart import encoder
 from .exceptions import CapeException
+import string
 
 API_VERSION = 0.1
 
@@ -146,6 +147,12 @@ class CapeClient:
                 raise TypeError(f'Expecting document ids to be of type list, instead got {type(document_ids)}')
         else:
             document_ids = []
+        if not question.strip():
+            raise CapeException(f'Expecting question parameter to not be empty string')
+        invalidChars = set(string.punctuation.replace("_", ""))
+        if all(ch in invalidChars for ch in question.strip().replace(" ", "")):
+            raise CapeException(
+                f'All characters in question parameter are punctuation. At least one alpha-numeric character required.')
         params = {'token': token,
                   'question': question,
                   'threshold': threshold,
@@ -264,7 +271,8 @@ class CapeClient:
         :param question: The new paraphrase of this saved reply's canonical question
         :return: The ID of the new question
         """
-        r = self._raw_api_call('saved-replies/add-paraphrase-question', {'replyId': str(reply_id), 'question': question})
+        r = self._raw_api_call('saved-replies/add-paraphrase-question',
+                               {'replyId': str(reply_id), 'question': question})
         return r.json()['result']['questionId']
 
     def edit_paraphrase_question(self, question_id, question):
@@ -275,7 +283,8 @@ class CapeClient:
         :param question: The modified question text
         :return: The ID of the question that was modified
         """
-        r = self._raw_api_call('saved-replies/edit-paraphrase-question', {'questionId': str(question_id), 'question': question})
+        r = self._raw_api_call('saved-replies/edit-paraphrase-question',
+                               {'questionId': str(question_id), 'question': question})
         return r.json()['result']['questionId']
 
     def edit_canonical_question(self, reply_id, question):
@@ -286,7 +295,8 @@ class CapeClient:
         :param question: The modified question text
         :return: The ID of the saved reply that was modified
         """
-        r = self._raw_api_call('saved-replies/edit-canonical-question', {'replyId': str(reply_id), 'question': question})
+        r = self._raw_api_call('saved-replies/edit-canonical-question',
+                               {'replyId': str(reply_id), 'question': question})
         return r.json()['result']['replyId']
 
     def delete_paraphrase_question(self, question_id):
@@ -378,7 +388,8 @@ class CapeClient:
                                                               'text': text,
                                                               'documentId': document_id,
                                                               'origin': origin,
-                                                              'replace': str(replace)}, monitor_callback=monitor_callback)
+                                                              'replace': str(replace)},
+                                   monitor_callback=monitor_callback)
         elif file_path is not None:
             if document_type is None:
                 document_type = 'file'
@@ -388,7 +399,8 @@ class CapeClient:
                                                               'text': fh,
                                                               'documentId': document_id,
                                                               'origin': origin,
-                                                              'replace': str(replace)}, monitor_callback=monitor_callback)
+                                                              'replace': str(replace)},
+                                   monitor_callback=monitor_callback)
             fh.close()
         else:
             raise CapeException("Either the 'text' or the 'file_path' parameter are required for document uploads.")
