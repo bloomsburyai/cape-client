@@ -192,7 +192,7 @@ On to the exciting bit! Now we'll go over how we can add the search functionalit
 The Answer Method & Object
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Once you've uploaded your documents, getting a response back is as simple as calling one method - :meth:cape.client.CapeClient.answer
+Once you've uploaded your documents, getting a response back is as simple as calling one method - :meth:`cape.client.CapeClient.answer`
 which returns a ranked list of answers. We've got an example below, which we'll discuss in more detail before jumping in to implementing the tutorial.::
 
     answers = cape_client.answer(query='What is football?',
