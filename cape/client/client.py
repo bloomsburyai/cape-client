@@ -165,15 +165,15 @@ class CapeClient:
         """
         if document_ids is not None:
             if not isinstance(document_ids, list):
-                raise TypeError(f'Expecting document ids to be of type list, instead got {type(document_ids)}')
+                raise TypeError('Expecting document ids to be of type list, instead got %s' % type(document_ids))
         else:
             document_ids = []
         if not question.strip():
-            raise CapeException(f'Expecting question parameter to not be empty string')
+            raise CapeException('Expecting question parameter to not be empty string')
         invalidChars = set(string.punctuation.replace("_", ""))
         if all(ch in invalidChars for ch in question.strip().replace(" ", "")):
             raise CapeException(
-                f'All characters in question parameter are punctuation. At least one alpha-numeric character required.')
+                'All characters in question parameter are punctuation. At least one alpha-numeric character required.')
         params = {'token': token,
                   'question': question,
                   'threshold': threshold,
