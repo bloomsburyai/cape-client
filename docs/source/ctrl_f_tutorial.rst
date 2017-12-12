@@ -459,6 +459,7 @@ Our JavaScript is only a few lines long::
             return false;
         });
     });
+
 And our stylesheet even shorter::
 
     .success {
