@@ -9,9 +9,6 @@ The Cape API is a an easy to use way to add advanced, AI-powered question answer
 tutorial we show you how you can create an AI-Powered Ctrl-F using the Cape API with only a few lines of code.
 
 Once finished, you'll have something that allows you to copy and paste in a piece of text and ask questions about it.
-It'll look something like this:
-
-.. image:: cape_fig.gif
 
 
 Getting Set Up
