@@ -149,7 +149,8 @@ class CapeClient:
         return r.json()['result']['threshold']
 
     def answer(self, question, token=None, threshold=None, document_ids=None,
-               source_type='all', speed_or_accuracy='balanced', number_of_items=1, offset=0):
+               source_type='all', speed_or_accuracy='balanced', number_of_items=1, offset=0,
+               text=None):
         """
         Provide a list of answers to a given question.
 
@@ -161,6 +162,7 @@ class CapeClient:
         :param speed_or_accuracy: Prioritise speed or accuracy in answers ('speed'/'accuracy'/'balanced')
         :param number_of_items: The number of answers to return
         :param offset: The starting point in the list of answers, used in conjunction with number_of_items to retrieve multiple batches of answers.
+        :param text: An inline text to be treated as a document with id "Inline Text"
         :return: A list of answers
         """
         if document_ids is not None:
@@ -181,7 +183,8 @@ class CapeClient:
                   'sourceType': str(source_type),
                   'speedOrAccuracy': speed_or_accuracy,
                   'numberOfItems': str(number_of_items),
-                  'offset': str(offset)}
+                  'offset': str(offset),
+                  'text': text}
         if token is None:
             params.pop('token')
             if not self.logged_in():
@@ -190,6 +193,8 @@ class CapeClient:
             params.pop('documentIds')
         if threshold is None:
             params.pop('threshold')
+        if text is None:
+            params.pop('text')
         r = self._raw_api_call('answer', params)
         return r.json()['result']['items']
 

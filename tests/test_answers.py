@@ -19,6 +19,9 @@ def test_document_ids(cc):
     answers = cc.answer("Is this API easy to use?", document_ids=["358e1b77c9bcc353946dfe107d6b32ff"])
     assert len(answers) == 1
 
+def test_inline_answer(cc):
+    answers = cc.answer("Is this API easy to use?", text="This API is easy to use.")
+    assert len(answers) == 1
 
 def test_answer_exceptions(cc):
     with pytest.raises(CapeException):
