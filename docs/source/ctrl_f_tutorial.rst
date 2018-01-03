@@ -124,7 +124,7 @@ away. ::
     # WIKIPEDIA_TEXT is the string of the doc you want to upload
     doc_id = cape_client.upload_document("Football Document", WIKIPEDIA_TEXT)
     # you can ask a question to a specific document by referencing the document id
-    answers = cc.answer(query='What is football?',
+    answers = cc.answer(question='What is football?',
                         token=user_token,
                         document_ids=[doc_id],
                         source_type='document',
