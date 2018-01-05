@@ -46,7 +46,9 @@ class CapeClient:
         self.admin_token = admin_token
         self.user_token = None
 
-    def _raw_api_call(self, method, parameters={}, monitor_callback=None):
+    def _raw_api_call(self, method, parameters=None, monitor_callback=None):
+        if parameters is None:
+            parameters={}
         url = "%s/%s" % (self.api_base, method)
         if 'token' in parameters:
             token = parameters.pop('token')
@@ -55,7 +57,12 @@ class CapeClient:
             url += "?adminToken=%s" % self.admin_token
         if 'documentIds' in parameters and not isinstance(parameters['documentIds'], str):
             parameters['documentIds'] = json.dumps(parameters['documentIds'])
-        if parameters != {}:
+        if parameters:
+            if self.session_cookie:
+                r = self.session.get(url, cookies={'session': self.session_cookie})
+            else:
+                r = self.session.get(url)
+        else:
             m = encoder.MultipartEncoderMonitor.from_fields(fields=parameters, encoding='utf-8',
                                                             callback=monitor_callback)
             if self.session_cookie:
@@ -63,11 +70,7 @@ class CapeClient:
                                       headers={'Content-Type': m.content_type})
             else:
                 r = self.session.post(url, data=m, headers={'Content-Type': m.content_type})
-        else:
-            if self.session_cookie:
-                r = self.session.get(url, cookies={'session': self.session_cookie})
-            else:
-                r = self.session.get(url)
+
         if r.status_code == 200 and r.json()['success']:
             return r
         else:
