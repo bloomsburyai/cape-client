@@ -124,7 +124,7 @@ away. ::
     # WIKIPEDIA_TEXT is the string of the doc you want to upload
     doc_id = cape_client.upload_document("Football Document", WIKIPEDIA_TEXT)
     # you can ask a question to a specific document by referencing the document id
-    answers = cc.answer(query='What is football?',
+    answers = cc.answer(question='What is football?',
                         token=user_token,
                         document_ids=[doc_id],
                         source_type='document',
@@ -195,7 +195,7 @@ The Answer Method & Object
 Once you've uploaded your documents, getting a response back is as simple as calling one method - :meth:`cape.client.CapeClient.answer`
 which returns a ranked list of answers. We've got an example below, which we'll discuss in more detail before jumping in to implementing the tutorial.::
 
-    answers = cape_client.answer(query='What is football?',
+    answers = cape_client.answer(question='What is football?',
                                  token=ANSWER_TOKEN,
                                  document_ids=[FOOTBALL_DOCUMENT_ID],
                                  source_type='document',
