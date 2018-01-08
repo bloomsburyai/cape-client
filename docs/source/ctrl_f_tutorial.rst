@@ -81,8 +81,8 @@ to your API calls even if you aren't logged in.::
 The **User Token** is only used when answering questions. You can think of your User token as giving someone 'read'
 access to your AI. The following code retrieves your user token so we can query our document for answers.::
 
-    user_token = cape_client.get_user_token()
-    print(user_token) # 08aerv08ajkdp
+    my_user_token = cape_client.get_user_token()
+    print(my_user_token) # 08aerv08ajkdp
 
 Adding The Document You Want To Search
 --------------------------------------
@@ -125,7 +125,7 @@ away. ::
     doc_id = cape_client.upload_document("Football Document", WIKIPEDIA_TEXT)
     # you can ask a question to a specific document by referencing the document id
     answers = cc.answer(question='What is football?',
-                        token=user_token,
+                        user_token=my_user_token,
                         document_ids=[doc_id],
                         source_type='document',
                         number_of_items=1)
@@ -196,7 +196,7 @@ Once you've uploaded your documents, getting a response back is as simple as cal
 which returns a ranked list of answers. We've got an example below, which we'll discuss in more detail before jumping in to implementing the tutorial.::
 
     answers = cape_client.answer(question='What is football?',
-                                 token=ANSWER_TOKEN,
+                                 user_token=ANSWER_TOKEN,
                                  document_ids=[FOOTBALL_DOCUMENT_ID],
                                  source_type='document',
                                  number_of_items=5)

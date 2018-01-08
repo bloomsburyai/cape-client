@@ -151,14 +151,14 @@ class CapeClient:
         r = self._raw_api_call('user/set-default-threshold', {'threshold': threshold})
         return r.json()['result']['threshold']
 
-    def answer(self, question, token=None, threshold=None, document_ids=None,
+    def answer(self, question, user_token=None, threshold=None, document_ids=None,
                source_type='all', speed_or_accuracy='balanced', number_of_items=1, offset=0,
                text=None):
         """
         Provide a list of answers to a given question.
 
         :param question: The question to ask
-        :param token: A token retrieved from get_user_token (Default: the token for the currently authenticated user)
+        :param user_token: A token retrieved from get_user_token (Default: the token for the currently authenticated user)
         :param threshold: The minimum confidence of answers to return ('verylow'/'low'/'medium'/'medium'/'veryhigh')
         :param document_ids: A list of documents to search for answers (Default: all documents)
         :param source_type: Whether to search documents, saved replies or all ('document'/'saved_reply'/'all')
@@ -179,7 +179,7 @@ class CapeClient:
         if all(ch in invalidChars for ch in question.strip().replace(" ", "")):
             raise CapeException(
                 'All characters in question parameter are punctuation. At least one alpha-numeric character required.')
-        params = {'token': token,
+        params = {'token': user_token,
                   'question': question,
                   'threshold': threshold,
                   'documentIds': json.dumps(document_ids),
@@ -188,7 +188,7 @@ class CapeClient:
                   'numberOfItems': str(number_of_items),
                   'offset': str(offset),
                   'text': text}
-        if token is None:
+        if user_token is None:
             params.pop('token')
             if not self.logged_in():
                 raise CapeException("A user token must be supplied if the client isn't logged in.")
