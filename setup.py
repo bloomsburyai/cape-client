@@ -5,7 +5,7 @@ setup(
     name=NAME,
     version=VERSION,
     long_description=DESCRIPTION,
-    description='Client library for the Cape machine reading API'
+    description='Client library for the Cape machine reading API',
     author='Bloomsbury AI',
     author_email='contact@bloomsbury.ai',
     url='https://thecape.ai/',
