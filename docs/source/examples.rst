@@ -83,8 +83,8 @@ This will output the following answer list::
             'sourceId': '358e1b77c9bcc353946dfe107d6b32ff',
             'answerTextStartOffset': 30,
             'answerTextEndOffset': 56,
-            'answerContextStartOffset':17,
-            'answerContextEndOffset':98
+            'answerContextStartOffset': 0,
+            'answerContextEndOffset': 64
         }
     ]
 
@@ -676,8 +676,8 @@ This returns a list of inbox items::
                         'sourceId': '358e1b77c9bcc353946dfe107d6b32ff',
                         'answerTextStartOffset': 30,
                         'answerTextEndOffset': 56,
-                        'answerContextStartOffset':17,
-                        'answerContextEndOffset':98
+                        'answerContextStartOffset': 0,
+                        'answerContextEndOffset': 64
                     }
                 ]
             }
