@@ -129,7 +129,7 @@ away. ::
                         document_ids=[doc_id],
                         source_type='document',
                         number_of_items=1)
-    print(answers) # [{'text':'Football is a family of team sports',...},...]
+    print(answers) # [{'answerText':'Football is a family of team sports',...},...]
 
 Adding The Upload Document Method Into Our App
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -201,7 +201,7 @@ which returns a ranked list of answers. We've got an example below, which we'll 
                                  source_type='document',
                                  number_of_items=5)
     print(answers)
-    #  [{'text':'Football is a family of team sports',...}, ..., ... ]
+    #  [{'answerText':'Football is a family of team sports',...}, ..., ... ]
 
 Now let's go through each of these parameters in detail.
 
