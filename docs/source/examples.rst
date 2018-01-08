@@ -646,7 +646,7 @@ To retrieve inbox items call the :meth:`cape.client.CapeClient.get_inbox` method
     inbox = cc.get_inbox()
     print(inbox)
 
-This returns a list of inbox items:
+This returns a list of inbox items::
 
     {
         'totalItems': 2,
