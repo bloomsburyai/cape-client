@@ -23,9 +23,6 @@ setup(
     ],
     packages=PACKAGES,
     include_package_data=True,
-    package_data={
-        '': ['*.*'],
-    },
     python_requires='>=3.5',
     install_requires=[
         'requests>=2.18.1',
