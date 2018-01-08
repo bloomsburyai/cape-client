@@ -1,3 +1,4 @@
+rm -r dist README.rst
 # PyPi uses rst for description formatting so we convert when making a release
 m2r README.md
 # Cut off the top 6 lines showing the CircleCI build status
