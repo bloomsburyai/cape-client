@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/bloogram/cape-client.svg?style=shield&circle-token=cd2f01eaa4a83742a3cf5beaeb3ed8b8f69c8561)](https://circleci.com/gh/bloogram/cape-client)
+[![CircleCI](https://circleci.com/gh/bloomsburyai/cape-client.svg?style=shield&circle-token=fbd2fa47248a7d46f4c207246e072a19105a345a)](https://circleci.com/gh/bloomsburyai/cape-client)
 
 # Cape API Client Module
 
