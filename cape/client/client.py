@@ -80,8 +80,8 @@ class CapeClient:
         """
         Log in to the Cape API as an AI builder.
 
-        :param login: The username to log in with
-        :param password: The password to log in with
+        :param login: The username to log in with.
+        :param password: The password to log in with.
         :return:
         """
         r = self._raw_api_call('user/login', {'login': login, 'password': password})
@@ -91,7 +91,7 @@ class CapeClient:
         """
         Reports whether we're currently logged in.
 
-        :return: Whether we're logged in or not
+        :return: Whether we're logged in or not.
         """
         return self.session_cookie != False or self.admin_token != None
 
@@ -109,7 +109,7 @@ class CapeClient:
         """
         Retrieve the admin token for the currently logged in user.
 
-        :return: An admin token
+        :return: An admin token.
         """
         r = self._raw_api_call('user/get-admin-token')
         return r.json()['result']['adminToken']
@@ -118,35 +118,35 @@ class CapeClient:
         """
         Retrieve a user token suitable for making 'answer' requests.
 
-        :return: A user token
+        :return: A user token.
         """
         r = self._raw_api_call('user/get-user-token')
         return r.json()['result']['userToken']
 
     def get_profile(self):
         """
-        Retrieve the current user's profile
+        Retrieve the current user's profile.
 
-        :return: A dictionary containing the user's profile
+        :return: A dictionary containing the user's profile.
         """
         r = self._raw_api_call('user/get-profile')
         return r.json()['result']
 
     def get_default_threshold(self):
         """
-        Retrieve the default threshold used if one isn't explicitly specified when calling answer()
+        Retrieve the default threshold used if one isn't explicitly specified when calling answer().
 
-        :return: The current default threshold (either 'verylow', 'low', 'medium', 'high' or 'veryhigh')
+        :return: The current default threshold (either 'verylow', 'low', 'medium', 'high' or 'veryhigh').
         """
         r = self._raw_api_call('user/get-default-threshold')
         return r.json()['result']['threshold']
 
     def set_default_threshold(self, threshold):
         """
-        Set the default threshold used if one isn't explicitly specified when calling answer()
+        Set the default threshold used if one isn't explicitly specified when calling answer().
 
-        :param threshold: The new default threshold to set, must be either 'verylow', 'low', 'medium', 'high' or 'veryhigh'
-        :return: The new default threshold that's just been set
+        :param threshold: The new default threshold to set, must be either 'verylow', 'low', 'medium', 'high' or 'veryhigh'.
+        :return: The new default threshold that's just been set.
         """
         r = self._raw_api_call('user/set-default-threshold', {'threshold': threshold})
         return r.json()['result']['threshold']
@@ -157,16 +157,16 @@ class CapeClient:
         """
         Provide a list of answers to a given question.
 
-        :param question: The question to ask
-        :param user_token: A token retrieved from get_user_token (Default: the token for the currently authenticated user)
-        :param threshold: The minimum confidence of answers to return ('verylow'/'low'/'medium'/'medium'/'veryhigh')
-        :param document_ids: A list of documents to search for answers (Default: all documents)
-        :param source_type: Whether to search documents, saved replies or all ('document'/'saved_reply'/'all')
-        :param speed_or_accuracy: Prioritise speed or accuracy in answers ('speed'/'accuracy'/'balanced')
-        :param number_of_items: The number of answers to return
+        :param question: The question to ask.
+        :param user_token: A token retrieved from get_user_token (Default: the token for the currently authenticated user).
+        :param threshold: The minimum confidence of answers to return ('verylow'/'low'/'medium'/'medium'/'veryhigh').
+        :param document_ids: A list of documents to search for answers (Default: all documents).
+        :param source_type: Whether to search documents, saved replies or all ('document'/'saved_reply'/'all').
+        :param speed_or_accuracy: Prioritise speed or accuracy in answers ('speed'/'accuracy'/'balanced').
+        :param number_of_items: The number of answers to return.
         :param offset: The starting point in the list of answers, used in conjunction with number_of_items to retrieve multiple batches of answers.
-        :param text: An inline text to be treated as a document with id "Inline Text"
-        :return: A list of answers
+        :param text: An inline text to be treated as a document with id "Inline Text".
+        :return: A list of answers.
         """
         if document_ids is not None:
             if not isinstance(document_ids, list):
@@ -205,12 +205,12 @@ class CapeClient:
         """
         Retrieve the items in the current user's inbox.
 
-        :param read: Filter messages based on whether they have been read
-        :param answered: Filter messages based on whether they have been answered
-        :param search_term: Filter messages based on whether they contain the search term
-        :param number_of_items:	The number of inbox items to return
+        :param read: Filter messages based on whether they have been read.
+        :param answered: Filter messages based on whether they have been answered.
+        :param search_term: Filter messages based on whether they contain the search term.
+        :param number_of_items:	The number of inbox items to return.
         :param offset: The starting point in the list of inbox items, used in conjunction with number_of_tems to retrieve multiple batches of inbox items.
-        :return: A list of inbox items in reverse chronological order (newest first)
+        :return: A list of inbox items in reverse chronological order (newest first).
         """
         r = self._raw_api_call('inbox/get-inbox', {'read': str(read),
                                                    'answered': str(answered),
@@ -223,8 +223,8 @@ class CapeClient:
         """
         Mark an inbox item as having been read.
 
-        :param inbox_id: The inbox item to mark as being read
-        :return: The ID of the inbox item that was marked as read
+        :param inbox_id: The inbox item to mark as being read.
+        :return: The ID of the inbox item that was marked as read.
         """
         r = self._raw_api_call('inbox/mark-inbox-read', {'inboxId': str(inbox_id)})
         return r.json()['result']['inboxId']
@@ -233,8 +233,8 @@ class CapeClient:
         """
         Archive an inbox item.
 
-        :param inbox_id: The inbox item to archive
-        :return: The ID of the inbox item that was archived
+        :param inbox_id: The inbox item to archive.
+        :return: The ID of the inbox item that was archived.
         """
         r = self._raw_api_call('inbox/archive-inbox', {'inboxId': str(inbox_id)})
         return r.json()['result']['inboxId']
@@ -243,11 +243,11 @@ class CapeClient:
         """
         Retrieve a list of saved replies.
 
-        :param search_term: Filter saved replies based on whether they contain the search term
-        :param saved_reply_ids: List of saved reply IDs to return
-        :param number_of_items: The number of saved replies to return
+        :param search_term: Filter saved replies based on whether they contain the search term.
+        :param saved_reply_ids: List of saved reply IDs to return.
+        :param number_of_items: The number of saved replies to return.
         :param offset: The starting point in the list of saved replies, used in conjunction with number_of_tems to retrieve multiple batches of saved replies.
-        :return: A list of saved replies in reverse chronological order (newest first)
+        :return: A list of saved replies in reverse chronological order (newest first).
         """
         if saved_reply_ids is not None:
             assert isinstance(saved_reply_ids, list)
@@ -274,9 +274,9 @@ class CapeClient:
         In addition to the canonical question a saved reply may have many paraphrased questions associated with it
         which should produce the same answer (e.g. "How old are you?" vs "What is your age?").
 
-        :param question: The question this saved reply relates to
-        :param answer: The answer to reply with when the question is asked
-        :return: The ID of the new saved reply
+        :param question: The question this saved reply relates to.
+        :param answer: The answer to reply with when the question is asked.
+        :return: The ID of the new saved reply.
         """
         r = self._raw_api_call('saved-replies/add-saved-reply', {'question': question,
                                                                  'answer': answer})
@@ -286,8 +286,8 @@ class CapeClient:
         """
         Delete a saved reply.
 
-        :param reply_id: The ID of the saved reply to delete
-        :return: The ID of the saved reply that was deleted
+        :param reply_id: The ID of the saved reply to delete.
+        :return: The ID of the saved reply that was deleted.
         """
         r = self._raw_api_call('saved-replies/delete-saved-reply', {'replyId': str(reply_id)})
         return r.json()['result']['replyId']
@@ -296,9 +296,9 @@ class CapeClient:
         """
         Add a new paraphrase question to an existing saved reply.
 
-        :param reply_id: The ID of the saved reply to add this question to
-        :param question: The new paraphrase of this saved reply's canonical question
-        :return: The ID of the new question
+        :param reply_id: The ID of the saved reply to add this question to.
+        :param question: The new paraphrase of this saved reply's canonical question.
+        :return: The ID of the new question.
         """
         r = self._raw_api_call('saved-replies/add-paraphrase-question',
                                {'replyId': str(reply_id), 'question': question})
@@ -308,9 +308,9 @@ class CapeClient:
         """
         Modify an existing paraphrase question.
 
-        :param question_id: The ID of the question to modify
-        :param question: The modified question text
-        :return: The ID of the question that was modified
+        :param question_id: The ID of the question to modify.
+        :param question: The modified question text.
+        :return: The ID of the question that was modified.
         """
         r = self._raw_api_call('saved-replies/edit-paraphrase-question',
                                {'questionId': str(question_id), 'question': question})
@@ -320,9 +320,9 @@ class CapeClient:
         """
         Modify the canonical question belonging to a saved reply.
 
-        :param reply_id: The ID of the saved reply to modify the canonical question of
-        :param question: The modified question text
-        :return: The ID of the saved reply that was modified
+        :param reply_id: The ID of the saved reply to modify the canonical question of.
+        :param question: The modified question text.
+        :return: The ID of the saved reply that was modified.
         """
         r = self._raw_api_call('saved-replies/edit-canonical-question',
                                {'replyId': str(reply_id), 'question': question})
@@ -332,8 +332,8 @@ class CapeClient:
         """
         Delete a paraphrase question.
 
-        :param question_id: The ID of the paraphrase question to delete
-        :return: The ID of the paraphrase question that was deleted
+        :param question_id: The ID of the paraphrase question to delete.
+        :return: The ID of the paraphrase question that was deleted.
         """
         r = self._raw_api_call('saved-replies/delete-paraphrase-question', {'questionId': str(question_id)})
         return r.json()['result']['questionId']
@@ -342,30 +342,30 @@ class CapeClient:
         """
         Add a new answer to an existing saved reply.
 
-        :param reply_id: The ID of the saved reply to add this answer to
-        :param answer: A new answer to add to the saved reply
-        :return: The ID of the newly created answer
+        :param reply_id: The ID of the saved reply to add this answer to.
+        :param answer: A new answer to add to the saved reply.
+        :return: The ID of the newly created answer.
         """
         r = self._raw_api_call('saved-replies/add-answer', {'replyId': str(reply_id), 'answer': answer})
         return r.json()['result']['answerId']
 
     def edit_answer(self, answer_id, answer):
         """
-        Modify an existing answer
+        Modify an existing answer.
 
-        :param answer_id: The ID of the answer to edit
-        :param answer: The modified answer text
-        :return: The ID of the answer that was modified
+        :param answer_id: The ID of the answer to edit.
+        :param answer: The modified answer text.
+        :return: The ID of the answer that was modified.
         """
         r = self._raw_api_call('saved-replies/edit-answer', {'answerId': str(answer_id), 'answer': answer})
         return r.json()['result']['answerId']
 
     def delete_answer(self, answer_id):
         """
-        Delete an existing an answer
+        Delete an existing an answer.
 
-        :param answer_id: The ID of the answer to delete
-        :return: The ID of the answer that was deleted
+        :param answer_id: The ID of the answer to delete.
+        :return: The ID of the answer that was deleted.
         """
         r = self._raw_api_call('saved-replies/delete-answer', {'answerId': str(answer_id)})
         return r.json()['result']['answerId']
@@ -374,10 +374,10 @@ class CapeClient:
         """
         Retrieve this user's documents.
 
-        :param document_ids: A list of documents to return
-        :param number_of_items: The number of documents to return
-        :param offset: The starting point in the list of documents, used in conjunction with number_of_items to retrieve multiple batches of documents
-        :return: A list of documents in reverse chronological order (newest first)
+        :param document_ids: A list of documents to return.
+        :param number_of_items: The number of documents to return.
+        :param offset: The starting point in the list of documents, used in conjunction with number_of_items to retrieve multiple batches of documents.
+        :return: A list of documents in reverse chronological order (newest first).
         """
         if document_ids is not None:
             assert isinstance(document_ids, list)
@@ -400,15 +400,15 @@ class CapeClient:
         """
         Create a new document or replace an existing document.
 
-        :param title: The title to give the new document
-        :param text: The plain text contents of the document (either text or file_path must be supplied)
-        :param file_path: A file to upload (either text or file_path must be supplied)
-        :param document_id: The ID to give the new document (Default: An SHA256 hash of the document contents)
-        :param origin: Where the document came from
+        :param title: The title to give the new document.
+        :param text: The plain text contents of the document (either text or file_path must be supplied).
+        :param file_path: A file to upload (either text or file_path must be supplied).
+        :param document_id: The ID to give the new document (Default: An SHA256 hash of the document contents).
+        :param origin: Where the document came from.
         :param replace: If true and a document already exists with the same document ID it will be overwritten with the new upload. If false an error is returned when a document ID already exists.
-        :param document_type: Whether this document was created by inputting text or uploading a file (if not set this will be automatically determined)
-        :param monitor_callback: A method to call with updates on the file upload progress
-        :return: The ID of the uploaded document
+        :param document_type: Whether this document was created by inputting text or uploading a file (if not set this will be automatically determined).
+        :param monitor_callback: A method to call with updates on the file upload progress.
+        :return: The ID of the uploaded document.
         """
         if text is not None:
             if document_type is None:
@@ -438,8 +438,8 @@ class CapeClient:
     def delete_document(self, document_id):
         """
 
-        :param document_id: The ID of the document to delete
-        :return: The ID of the document that was deleted
+        :param document_id: The ID of the document to delete.
+        :return: The ID of the document that was deleted.
         """
         r = self._raw_api_call('documents/delete-document', {'documentId': document_id})
         return r.json()['result']['documentId']
