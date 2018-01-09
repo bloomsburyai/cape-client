@@ -8,7 +8,7 @@ setup(
     description='Client library for the Cape machine reading API',
     author='Bloomsbury AI',
     author_email='contact@bloomsbury.ai',
-    url='https://thecape.ai/',
+    url='https://github.com/bloomsburyai/cape-client',
     license='MIT',
     keywords='ai nlp natural language question answer chat chatbot bot artificial intelligence',
     classifiers=[
