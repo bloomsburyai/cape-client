@@ -464,7 +464,7 @@ class CapeClient:
 
     def get_annotations(self, search_term='', annotation_ids=None, document_ids=None, number_of_items=30, offset=0):
         """
-                Retrieve the items in the current user's inbox.
+        Retrieve a list of annotations.
 
         :param search_term: Filter messages based on whether the contain the search term.
         :param annotation_ids: A list of annotation to return (Default: all annotations).
@@ -487,3 +487,15 @@ class CapeClient:
             params.pop('documentIds')
         r = self._raw_api_call('annotations/get-annotations', params)
         return r.json()['result']
+
+    def delete_annotation(self, annotation_id):
+        """
+        Delete an annotation.
+
+        :param annotation_id: The ID of the annotation to delete.
+        :return: The ID of the annotation that was deleted.
+        """
+        r = self._raw_api_call('annotations/delete-annotation', {
+            'annotationId': annotation_id
+        })
+        return r.json()['result']['annotationId']
