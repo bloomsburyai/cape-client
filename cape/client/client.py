@@ -24,6 +24,7 @@ import json
 from requests import Session
 from requests_toolbelt.multipart import encoder
 from .exceptions import CapeException
+from .utils import check_list
 import string
 
 API_VERSION = 0.1
@@ -168,11 +169,7 @@ class CapeClient:
         :param text: An inline text to be treated as a document with id "Inline Text".
         :return: A list of answers.
         """
-        if document_ids is not None:
-            if not isinstance(document_ids, list):
-                raise TypeError('Expecting document ids to be of type list, instead got %s' % type(document_ids))
-        else:
-            document_ids = []
+        document_ids = check_list(document_ids, 'document IDs')
         if not question.strip():
             raise CapeException('Expecting question parameter to not be empty string')
         invalidChars = set(string.punctuation.replace("_", ""))
@@ -239,7 +236,7 @@ class CapeClient:
         r = self._raw_api_call('inbox/archive-inbox', {'inboxId': str(inbox_id)})
         return r.json()['result']['inboxId']
 
-    def get_saved_replies(self, search_term='', saved_reply_ids=[], number_of_items=30, offset=0):
+    def get_saved_replies(self, search_term='', saved_reply_ids=None, number_of_items=30, offset=0):
         """
         Retrieve a list of saved replies.
 
@@ -249,10 +246,7 @@ class CapeClient:
         :param offset: The starting point in the list of saved replies, used in conjunction with number_of_tems to retrieve multiple batches of saved replies.
         :return: A list of saved replies in reverse chronological order (newest first).
         """
-        if saved_reply_ids is not None:
-            assert isinstance(saved_reply_ids, list)
-        else:
-            saved_reply_ids = []
+        saved_reply_ids = check_list(saved_reply_ids, 'saved reply IDs')
         params = {'searchTerm': search_term,
                   'savedReplyIds': json.dumps(saved_reply_ids),
                   'numberOfItems': str(number_of_items),
@@ -276,7 +270,7 @@ class CapeClient:
 
         :param question: The question this saved reply relates to.
         :param answer: The answer to reply with when the question is asked.
-        :return: The ID of the new saved reply.
+        :return: The IDs of the new saved reply and answer.
         """
         r = self._raw_api_call('saved-replies/add-saved-reply', {'question': question,
                                                                  'answer': answer})
@@ -370,7 +364,7 @@ class CapeClient:
         r = self._raw_api_call('saved-replies/delete-answer', {'answerId': str(answer_id)})
         return r.json()['result']['answerId']
 
-    def get_documents(self, document_ids=[], number_of_items=30, offset=0):
+    def get_documents(self, document_ids=None, number_of_items=30, offset=0):
         """
         Retrieve this user's documents.
 
@@ -379,10 +373,7 @@ class CapeClient:
         :param offset: The starting point in the list of documents, used in conjunction with number_of_items to retrieve multiple batches of documents.
         :return: A list of documents in reverse chronological order (newest first).
         """
-        if document_ids is not None:
-            assert isinstance(document_ids, list)
-        else:
-            document_ids = []
+        document_ids = check_list(document_ids, 'document IDs')
         params = {'documentIds': json.dumps(document_ids),
                   'numberOfItems': str(number_of_items),
                   'offset': str(offset)}
@@ -443,3 +434,56 @@ class CapeClient:
         """
         r = self._raw_api_call('documents/delete-document', {'documentId': document_id})
         return r.json()['result']['documentId']
+
+    def add_annotation(self, question, answer, document_id, start_offset, end_offset):
+        """
+        Create a new annotation for a specified document.
+
+        Annotations are made up of a pair consisting of a canonical question, the response it should produce and a
+        location within a specific document that this answer corresponds to.
+
+        In addition to the canonical question an annotation may have many paraphrased questions associated with it
+        which should produce the same answer (e.g. "How old are you?" vs "What is your age?").
+
+
+        :param question: The question this annotation relates to.
+        :param answer: The answer to reply with when the question is asked.
+        :param document_id: The document which this annotation corresponds to.
+        :param start_offset: The starting location of the annotation within the specified document.
+        :param end_offset: The ending location of the annotation within the specified document.
+        :return: The IDs of the new annotation and answer.
+        """
+        r = self._raw_api_call('annotations/add-annotation', {
+            'question': question,
+            'answer': answer,
+            'documentId': document_id,
+            'startOffset': str(start_offset),
+            'endOffset': str(end_offset)
+        })
+        return r.json()['result']
+
+    def get_annotations(self, search_term='', annotation_ids=None, document_ids=None, number_of_items=30, offset=0):
+        """
+                Retrieve the items in the current user's inbox.
+
+        :param search_term: Filter messages based on whether the contain the search term.
+        :param annotation_ids: A list of annotation to return (Default: all annotations).
+        :param document_ids: A list of documents to return annotations from (Default: all documents).
+        :param number_of_items: The number of annotations to return.
+        :param offset: The starting point in the list of annotations, used in conjunction with number_of_tems to retrieve multiple batches of annotations.
+        :return: A list of annotations
+        """
+        annotation_ids = check_list(annotation_ids, 'annotation IDs')
+        document_ids = check_list(document_ids, 'document IDs')
+
+        params = {'searchTerm': search_term,
+                  'annotationIds': json.dumps(annotation_ids),
+                  'documentIds': json.dumps(document_ids),
+                  'numberOfItems': str(number_of_items),
+                  'offset': str(offset)}
+        if len(annotation_ids) == 0:
+            params.pop('annotationIds')
+        if len(document_ids) == 0:
+            params.pop('documentIds')
+        r = self._raw_api_call('annotations/get-annotations', params)
+        return r.json()['result']
