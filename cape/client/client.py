@@ -499,3 +499,31 @@ class CapeClient:
             'annotationId': annotation_id
         })
         return r.json()['result']['annotationId']
+
+    def add_annotation_answer(self, annotation_id, answer):
+        """
+        Add a new answer to an existing annotation.
+
+        :param annotation_id: The ID of the annotation to add this answer to.
+        :param answer: The answer to add to the annotation.
+        :return: The ID of the answer that was created.
+        """
+        r = self._raw_api_call('annotations/add-answer', {
+            'annotationId': annotation_id,
+            'answer': answer
+        })
+        return r.json()['result']['answerId']
+
+    def delete_annotation_answer(self, answer_id):
+        """
+        Delete an answer from an annotation.
+
+        At least one answer must remain associated with an annotation.
+
+        :param answer_id: The answer to delete
+        :return: The ID of the answer that was deleted
+        """
+        r = self._raw_api_call('annotations/delete-answer', {
+            'answerId': answer_id
+        })
+        return r.json()['result']['answerId']
