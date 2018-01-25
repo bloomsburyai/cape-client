@@ -514,6 +514,20 @@ class CapeClient:
         })
         return r.json()['result']['answerId']
 
+    def edit_annotation_answer(self, answer_id, answer):
+        """
+        Edit an annotation's answer.
+
+        :param answer_id: The ID of the answer to edit.
+        :param answer: The new text to be used for this answer
+        :return: The ID of the answer that was edited.
+        """
+        r = self._raw_api_call('annotations/edit-answer', {
+            'answerId': answer_id,
+            'answer': answer
+        })
+        return r.json()['result']['answerId']
+
     def delete_annotation_answer(self, answer_id):
         """
         Delete an answer from an annotation.
