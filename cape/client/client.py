@@ -512,6 +512,7 @@ class CapeClient:
             'annotationId': annotation_id,
             'question': question
         })
+        return r.json()['result']['annotationId']
 
     def add_annotation_paraphrase_question(self, annotation_id, question):
         """
@@ -525,6 +526,21 @@ class CapeClient:
             'annotationId': annotation_id,
             'question': question
         })
+        return r.json()['result']['questionId']
+
+    def edit_annotation_paraphrase_question(self, question_id, question):
+        """
+        Modify an existing paraphrase question in an annotation.
+
+        :param question_id: The ID of the question to modify.
+        :param question: The modified question text.
+        :return: The ID of the question that was modified.
+        """
+        r = self._raw_api_call('annotations/edit-paraphrase-question', {
+            'questionId': question_id,
+            'question': question
+        })
+        return r.json()['result']['questionId']
 
     def add_annotation_answer(self, annotation_id, answer):
         """
