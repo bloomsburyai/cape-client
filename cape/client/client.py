@@ -542,6 +542,18 @@ class CapeClient:
         })
         return r.json()['result']['questionId']
 
+    def delete_annotation_paraphrase_question(self, question_id):
+        """
+        Delete an annotation's paraphrase question.
+
+        :param question_id: The ID of the question to delete.
+        :return: The ID of the question that was deleted.
+        """
+        r = self._raw_api_call('annotations/delete-paraphrase-question', {
+            'questionId': question_id
+        })
+        return r.json()['result']['questionId']
+
     def add_annotation_answer(self, annotation_id, answer):
         """
         Add a new answer to an existing annotation.
