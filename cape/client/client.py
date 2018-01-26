@@ -513,6 +513,19 @@ class CapeClient:
             'question': question
         })
 
+    def add_annotation_paraphrase_question(self, annotation_id, question):
+        """
+        Add a new paraphrase question to an existing annotation.
+
+        :param annotation_id: The ID of the annotation to add this question to.
+        :param question: The new paraphrase of this annotations's canonical question.
+        :return: The ID of the new question.
+        """
+        r = self._raw_api_call('annotations/add-paraphrase-question', {
+            'annotationId': annotation_id,
+            'question': question
+        })
+
     def add_annotation_answer(self, annotation_id, answer):
         """
         Add a new answer to an existing annotation.
