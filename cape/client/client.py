@@ -500,6 +500,19 @@ class CapeClient:
         })
         return r.json()['result']['annotationId']
 
+    def edit_annotation_canonical_question(self, annotation_id, question):
+        """
+        Edit the canonical question of an annotation.
+
+        :param annotation_id: The ID of the annotation to edit.
+        :param question: The new canonical question for this annotation.
+        :return: The ID of the annotation that was edited.
+        """
+        r = self._raw_api_call('annotations/edit-canonical-question', {
+            'annotationId': annotation_id,
+            'question': question
+        })
+
     def add_annotation_answer(self, annotation_id, answer):
         """
         Add a new answer to an existing annotation.
