@@ -435,7 +435,7 @@ class CapeClient:
         r = self._raw_api_call('documents/delete-document', {'documentId': document_id})
         return r.json()['result']['documentId']
 
-    def add_annotation(self, question, answer, document_id, start_offset, end_offset):
+    def add_annotation(self, question, answer, document_id, bounding_boxes=None, start_offset=None, end_offset=None):
         """
         Create a new annotation for a specified document.
 
@@ -453,13 +453,26 @@ class CapeClient:
         :param end_offset: The ending location of the annotation within the specified document.
         :return: The IDs of the new annotation and answer.
         """
-        r = self._raw_api_call('annotations/add-annotation', {
+        bounding_boxes = check_list(bounding_boxes, 'bounding boxes')
+
+        params = {
             'question': question,
             'answer': answer,
             'documentId': document_id,
+            'boundingBoxes': json.dumps(bounding_boxes),
             'startOffset': str(start_offset),
             'endOffset': str(end_offset)
-        })
+        }
+
+        if len(bounding_boxes) == 0:
+            params.pop('boundingBoxes')
+        if start_offset is None:
+            params.pop('startOffset')
+        if end_offset is None:
+            params.pop('endOffset')
+
+        r = self._raw_api_call('annotations/add-annotation', params)
+
         return r.json()['result']
 
     def get_annotations(self, search_term='', annotation_ids=None, document_ids=None, number_of_items=30, offset=0):
