@@ -428,6 +428,7 @@ class CapeClient:
 
     def delete_document(self, document_id):
         """
+        Delete a document.
 
         :param document_id: The ID of the document to delete.
         :return: The ID of the document that was deleted.
@@ -445,12 +446,12 @@ class CapeClient:
         In addition to the canonical question an annotation may have many paraphrased questions associated with it
         which should produce the same answer (e.g. "How old are you?" vs "What is your age?").
 
-
         :param question: The question this annotation relates to.
         :param answer: The answer to reply with when the question is asked.
         :param document_id: The document which this annotation corresponds to.
         :param start_offset: The starting location of the annotation within the specified document.
         :param end_offset: The ending location of the annotation within the specified document.
+        :param bounding_boxes: A list of dictionaries containing: 'page', 'x1', 'y1', 'x2' and 'y2' keys.
         :return: The IDs of the new annotation and answer.
         """
         bounding_boxes = check_list(bounding_boxes, 'bounding boxes')
@@ -479,12 +480,12 @@ class CapeClient:
         """
         Retrieve a list of annotations.
 
-        :param search_term: Filter messages based on whether the contain the search term.
-        :param annotation_ids: A list of annotation to return (Default: all annotations).
+        :param search_term: Filter annotations based on whether they contain the search term.
+        :param annotation_ids: A list of annotations to return/search within (Default: all annotations).
         :param document_ids: A list of documents to return annotations from (Default: all documents).
         :param number_of_items: The number of annotations to return.
         :param offset: The starting point in the list of annotations, used in conjunction with number_of_tems to retrieve multiple batches of annotations.
-        :return: A list of annotations
+        :return: A list of annotations.
         """
         annotation_ids = check_list(annotation_ids, 'annotation IDs')
         document_ids = check_list(document_ids, 'document IDs')
@@ -532,7 +533,7 @@ class CapeClient:
         Add a new paraphrase question to an existing annotation.
 
         :param annotation_id: The ID of the annotation to add this question to.
-        :param question: The new paraphrase of this annotations's canonical question.
+        :param question: The new paraphrase of this annotation's canonical question.
         :return: The ID of the new question.
         """
         r = self._raw_api_call('annotations/add-paraphrase-question', {
@@ -586,7 +587,7 @@ class CapeClient:
         Edit an annotation's answer.
 
         :param answer_id: The ID of the answer to edit.
-        :param answer: The new text to be used for this answer
+        :param answer: The new text to be used for this answer.
         :return: The ID of the answer that was edited.
         """
         r = self._raw_api_call('annotations/edit-answer', {
