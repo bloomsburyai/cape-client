@@ -485,29 +485,35 @@ class CapeClient:
 
         return r.json()['result']
 
-    def get_annotations(self, search_term='', annotation_ids=None, document_ids=None, number_of_items=30, offset=0):
+    def get_annotations(self, search_term='', annotation_ids=None, document_ids=None, pages=None, number_of_items=30,
+                        offset=0):
         """
         Retrieve a list of annotations.
 
         :param search_term: Filter annotations based on whether they contain the search term.
         :param annotation_ids: A list of annotations to return/search within (Default: all annotations).
         :param document_ids: A list of documents to return annotations from (Default: all documents).
+        :param pages: A list of pages to return annotations from (Default: all pages).
         :param number_of_items: The number of annotations to return.
         :param offset: The starting point in the list of annotations, used in conjunction with number_of_tems to retrieve multiple batches of annotations.
         :return: A list of annotations.
         """
         annotation_ids = check_list(annotation_ids, 'annotation IDs')
         document_ids = check_list(document_ids, 'document IDs')
+        pages = check_list(pages, 'pages')
 
         params = {'searchTerm': search_term,
                   'annotationIds': json.dumps(annotation_ids),
                   'documentIds': json.dumps(document_ids),
+                  'pages': json.dumps(pages),
                   'numberOfItems': str(number_of_items),
                   'offset': str(offset)}
         if len(annotation_ids) == 0:
             params.pop('annotationIds')
         if len(document_ids) == 0:
             params.pop('documentIds')
+        if len(pages) == 0:
+            params.pop('pages')
         r = self._raw_api_call('annotations/get-annotations', params)
         return r.json()['result']
 
