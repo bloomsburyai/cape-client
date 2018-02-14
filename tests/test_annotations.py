@@ -20,6 +20,13 @@ def test_document_ids(cc):
     assert len(annotations['items']) == 1
 
 
+def test_annotation_pages(cc):
+    annotations = cc.get_annotations(pages=[1,2,3])
+    assert len(annotations['items']) == 0
+    annotations = cc.get_annotations(pages=[5])
+    assert len(annotations['items']) == 30
+
+
 def test_annotation_number_of_items(cc):
     annotations = cc.get_annotations(number_of_items=1)
     assert len(annotations['items']) == 1
@@ -35,6 +42,15 @@ def test_annotation_offset(cc):
 
 def test_add_annotation(cc):
     response = cc.add_annotation('What colour is the sky?', 'Blue', document_id='sky', start_offset=4, end_offset=12)
+    assert 'annotationId' in response
+    assert 'answerId' in response
+
+
+def test_add_annotation_metadata(cc):
+    response = cc.add_annotation('What colour is the sky?', 'Blue', document_id='sky', start_offset=4, end_offset=12,
+                                 metadata={
+                                     'customfield': 'Test data'
+                                 })
     assert 'annotationId' in response
     assert 'answerId' in response
 
