@@ -152,6 +152,16 @@ class CapeClient:
         r = self._raw_api_call('user/set-default-threshold', {'threshold': threshold})
         return r.json()['result']['threshold']
 
+    def set_forward_email(self, email):
+        """
+        Set the email address that emails which couldn't be answered automatically are forwarded to.
+
+        :param email: The new forward email address to set.
+        :return: The new forward email address that's just been set.
+        """
+        r = self._raw_api_call('user/set-forward-email', {'email': email})
+        return r.json()['result']['forwardEmail']
+
     def answer(self, question, user_token=None, threshold=None, document_ids=None,
                source_type='all', speed_or_accuracy='balanced', number_of_items=1, offset=0,
                text=None):

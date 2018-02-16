@@ -44,3 +44,8 @@ def test_get_profile(cc):
 def test_get_admin_token(cc):
     admin_token = cc.get_admin_token()
     assert admin_token is not None
+
+
+def test_set_forward_email(cc):
+    email = cc.set_forward_email('test@bloomsbury.ai')
+    assert email == 'test@bloomsbury.ai'
