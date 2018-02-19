@@ -446,8 +446,7 @@ class CapeClient:
         r = self._raw_api_call('documents/delete-document', {'documentId': document_id})
         return r.json()['result']['documentId']
 
-    def add_annotation(self, question, answer, document_id, page=None, bounding_boxes=None, start_offset=None,
-                       end_offset=None, metadata=None):
+    def add_annotation(self, question, answer, document_id, start_offset=None, end_offset=None, metadata=None):
         """
         Create a new annotation for a specified document.
 
@@ -460,34 +459,24 @@ class CapeClient:
         :param question: The question this annotation relates to.
         :param answer: The answer to reply with when the question is asked.
         :param document_id: The document which this annotation corresponds to.
-        :param page: The page this annotation is associated with.
         :param start_offset: The starting location of the annotation within the specified document.
         :param end_offset: The ending location of the annotation within the specified document.
-        :param bounding_boxes: A list of dictionaries containing: 'x1', 'y1', 'x2' and 'y2' keys.
         :param metadata: A dictionary containing user definable metadata about this annotation.
         :return: The IDs of the new annotation and answer.
         """
-        bounding_boxes = check_list(bounding_boxes, 'bounding boxes')
-
         params = {
             'question': question,
             'answer': answer,
             'documentId': document_id,
-            'page': str(page),
-            'boundingBoxes': json.dumps(bounding_boxes),
             'startOffset': str(start_offset),
             'endOffset': str(end_offset),
             'metadata': json.dumps(metadata)
         }
 
-        if len(bounding_boxes) == 0:
-            params.pop('boundingBoxes')
         if start_offset is None:
             params.pop('startOffset')
         if end_offset is None:
             params.pop('endOffset')
-        if page is None:
-            params.pop('page')
         if metadata is None:
             params.pop('metadata')
 
