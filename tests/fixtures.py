@@ -2,8 +2,8 @@ import pytest
 from cape.client import CapeClient
 
 
-API_URL = 'https://ui-guinness.thecape.ai/mock/full/api'
-UNLUCKY_API_URL = 'https://ui-guinness.thecape.ai/mock/unlucky/api'
+API_URL = 'https://ui-thermocline.thecape.ai/mock/full/api'
+UNLUCKY_API_URL = 'https://ui-thermocline.thecape.ai/mock/unlucky/api'
 
 
 @pytest.fixture()
