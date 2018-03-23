@@ -14,6 +14,10 @@ that answers questions about the contents of documents. For example, you can use
 * Build a virtual office assistant that answers routine questions through Slack.
 * Build an add-on to your private search that mimics Google's 'direct answers'.
 
+To install the Cape client library simply run::
+
+    pip3 install cape-client
+
 ..  toctree::
     :maxdepth: 2
     :caption: Contents:
