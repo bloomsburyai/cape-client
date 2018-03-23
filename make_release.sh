@@ -7,7 +7,7 @@ echo "
 from setuptools import find_packages
 
 NAME = 'cape-client'
-VERSION = '0.1.0'
+VERSION = '0.2.0'
 DESCRIPTION = \"\"\"$DESCRIPTION\"\"\"
 PACKAGES = find_packages(exclude=['tests'])
 " > package_settings.py
