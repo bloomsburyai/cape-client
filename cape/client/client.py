@@ -270,7 +270,7 @@ class CapeClient:
     def create_saved_reply(self, question, answer):
         return self.add_saved_reply(question, answer)
 
-    def add_saved_reply(self, question, answer):
+    def add_saved_reply(self, question, answer, replace=False):
         """
         Create a new saved reply.
 
@@ -280,10 +280,12 @@ class CapeClient:
 
         :param question: The question this saved reply relates to.
         :param answer: The answer to reply with when the question is asked.
+        :param replace: If true and a saved reply already exists with the same question its answers will be overwritten with the new answer. If false an error is returned when a question already exists.
         :return: The IDs of the new saved reply and answer.
         """
         r = self._raw_api_call('saved-replies/add-saved-reply', {'question': question,
-                                                                 'answer': answer})
+                                                                 'answer': answer,
+                                                                 'replace': str(replace)})
         return r.json()['result']
 
     def delete_saved_reply(self, reply_id):
